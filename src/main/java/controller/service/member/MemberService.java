@@ -35,13 +35,15 @@ public class MemberService {
     @RequestMapping(value = "/select.do")
     public Member select(@RequestParam(value = "id") String id, @RequestParam(value = "pw") String password) {
         try {
-            return memberRepository.select(id, password);
+            Member member = memberRepository.select(id, password);
+            System.out.println(member);
+            return member;
         } catch (Exception e) {
         }
         return new Member("", "", "");
     }
 
-    public void update(){
+    public void update() {
 
     }
 }

@@ -15,7 +15,7 @@ import java.util.Date;
 @RequestMapping(value = "/article")
 public class ArticleService {
 
-    private ArticleRepository articleRepository;
+    private final ArticleRepository articleRepository;
 
     public ArticleService() {
         articleRepository = new ArticleRepository();
@@ -26,14 +26,14 @@ public class ArticleService {
         articleRepository.insert(article);
     }
 
-//    @RequestMapping(value = "/test.do")
-//    public void w() {
-//        try {
-//            Image image = ImageIO.read(new File("C:\\Users\\82102\\Desktop\\부엉이\\정보처리기사\\정처기 신청 영수증.JPG"));
-//
-//            Article article = new Article("manki", "test title", "test content", image, DateUtil.simpleFormat(new Date()));
-//            articleRepository.insert(article);
-//        } catch (Exception e) {
-//        }
-//    }
+    @RequestMapping(value = "/test.do")
+    public void w() {
+        try {
+            Image image = ImageIO.read(new File("C:\\Users\\82102\\Desktop\\부엉이\\정보처리기사\\정처기 신청 영수증.JPG"));
+
+            Article article = new Article("manki", "test title", "test content", image, DateUtil.simpleFormat(new Date()));
+            articleRepository.insert(article);
+        } catch (Exception e) {
+        }
+    }
 }
