@@ -9,7 +9,7 @@ import repository.ChabakRepository;
 import java.net.HttpURLConnection;
 import java.util.List;
 @Controller
-@RequestMapping(value = "chabak")
+@RequestMapping(value = "/chabak")
 public class ChabakService {
     private ChabakRepository repository;
 
@@ -17,17 +17,17 @@ public class ChabakService {
         repository = new ChabakRepository();
     }
 
-    @RequestMapping(value = "get")
+    @RequestMapping(value = "/get")
     public List<Chabak> getAllChabaks() {
         return repository.getChabaks();
     }
 
-    @RequestMapping(value = "getKey")
+    @RequestMapping(value = "/getKey")
     public List<Chabak> searchByKeyword(@RequestParam(value = "key") String key) {
         return repository.searchByKeyword(key);
     }
 
-    @RequestMapping(value = "getAds")
+    @RequestMapping(value = "/getAds")
     public List<Chabak> searchByAddress(@RequestParam(value = "address") String address) {
         return repository.searchByAddress(address);
     }

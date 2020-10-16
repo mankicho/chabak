@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import repository.MemberRepository;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @Controller
 @RequestMapping(value = "/member")
 public class MemberService {
@@ -22,13 +25,30 @@ public class MemberService {
     }
 
     @RequestMapping(value = "/insert.do")
-    public void register(@RequestParam(value = "id") String id, @RequestParam(value = "nickName") String nickName, @RequestParam(value = "pw") String pw) {
+    public String register(@RequestParam(value = "id") String id, @RequestParam(value = "nickName") String nickName, @RequestParam(value = "pw") String pw) {
 
         try {
             Member member = new Member(id, nickName, pw);
             memberRepository.insert(member);
+            return "insert";
         } catch (Exception e) {
             System.out.println("member 생성이 안됨");
+        }
+        return "error";
+    }
+
+    @RequestMapping(value = "/insertTest.do")
+    public void reg(HttpServletRequest request, HttpServletResponse response) {
+        String id = request.getParameter("id");
+        String pw = request.getParameter("pw");
+        String nickName = request.getParameter("nickName");
+
+        try {
+            Member member = new Member(id, nickName, pw);
+            memberRepository.insert(member);
+
+            response.getWriter().println("Join_OK");
+        } catch (Exception e) {
         }
     }
 

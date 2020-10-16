@@ -9,14 +9,24 @@ import java.awt.image.RenderedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Date;
 
 public class MainServer {
-    public static void main(String[] args) throws Exception {
-        Image image = ImageIO.read(new File("C:\\Users\\82102\\Desktop\\부엉이\\정보처리기사\\정처기 신청 영수증.JPG"));
-        String imagePath = "C:\\Users\\82102\\Desktop\\java\\chabak_server\\src\\main\\resources\\manki\\2020-10-12 15.46.jpg";
-        ImageIO.write((RenderedImage) image, "jpg", new File(imagePath));
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(8888);
+
+            while(true){
+                System.out.println(serverSocket.accept().toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }
