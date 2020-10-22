@@ -6,9 +6,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import repository.MemberRepository;
 
-@Controller
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@RestController
 @RequestMapping(value = "/member")
 public class MemberService {
     MemberRepository memberRepository;
@@ -17,33 +23,37 @@ public class MemberService {
         this.memberRepository = new MemberRepository();
     }
 
-    public Member login(String userId, String userPassword) throws Exception {
+    @RequestMapping(value = "/login.do")
+    public Member login(HttpServletRequest request) throws Exception {
+        String userId = request.getParameter("id");
+        String userPassword = request.getParameter("password");
         return memberRepository.select(userId, userPassword);
     }
 
     @RequestMapping(value = "/insert.do")
-    public void register(@RequestParam(value = "id") String id, @RequestParam(value = "nickName") String nickName, @RequestParam(value = "pw") String pw) {
+    public String register(HttpServletRequest request) {
+        String id = request.getParameter("id");
+        String nickName = request.getParameter("nickName");
+        String pw = request.getParameter("password");
 
-        try {
-            Member member = new Member(id, nickName, pw);
-            memberRepository.insert(member);
-        } catch (Exception e) {
-            System.out.println("member 생성이 안됨");
-        }
+        Member member = new Member(id, nickName, pw);
+        return memberRepository.insert(member);
     }
 
     @RequestMapping(value = "/select.do")
-    public Member select(@RequestParam(value = "id") String id, @RequestParam(value = "pw") String password) {
-        try {
-            Member member = memberRepository.select(id, password);
-            System.out.println(member);
-            return member;
-        } catch (Exception e) {
-        }
-        return new Member("", "", "");
+    public Member select(HttpServletRequest request) {
+        String id = request.getParameter("id");
+        String password = request.getParameter("password");
+        return memberRepository.select(id, password);
     }
 
-    public void update() {
+    @RequestMapping(value = "/update.do")
+    public String update(HttpServletRequest request, HttpServletResponse response) {
+        String id = request.getParameter("id");
+        String nickName = request.getParameter("nickName");
+        String password = request.getParameter("password");
+        System.out.println(id+","+nickName+","+password);
 
+        return memberRepository.update(id, nickName, password);
     }
 }

@@ -1,17 +1,24 @@
 package controller.service.board;
 
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 import domain.Article;
+import org.apache.axis.attachments.MultiPartDimeInputStream;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import repository.ArticleRepository;
 import util.DateUtil;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import java.awt.*;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 
-@Controller
+@RestController
 @RequestMapping(value = "/article")
 public class ArticleService {
 
@@ -22,8 +29,28 @@ public class ArticleService {
     }
 
     @RequestMapping(value = "/write.do")
-    public void write(Article article) {
-        articleRepository.insert(article);
+    public String write(HttpServletRequest request) {
+        String savePath = "C:\\Users\\82102\\Desktop\\" + DateUtil.simpleFormat(new Date());
+        int sizeLimit = 10 * 1024 * 1024;
+        try {
+            MultipartRequest multi = new MultipartRequest(request, savePath, sizeLimit, "euc-kr", new DefaultFileRenamePolicy());
+            String helloText = multi.getParameter("helloText");
+            String helloFile = multi.getFilesystemName("helloFile");
+            String originFileName = multi.getOriginalFileName("helloFile");
+            String mimeType = multi.getContentType("helloFile");
+
+
+            Enumeration<String> e = multi.getParameterNames();
+            while(e.hasMoreElements()){
+                String name = e.nextElement();
+                System.out.println(name+":"+multi.getParameter(name));
+            }
+            return "success";
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return "fail";
+        }
     }
 
     @RequestMapping(value = "/test.do")

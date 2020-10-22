@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
+    private static final String MAIN_USER_ID = "jongseol";
+    private static final String SUB_USER_ID = "jongseol";
+    private static final String PASSWORD = "1234";
+
     private static Connection connection;
 
     static {
@@ -17,7 +21,7 @@ public class DatabaseConnection {
 
     public static Connection get() throws SQLException {
         if (connection == null) {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/chabak?serverTimezone=Asia/Seoul", "chabak", "1234");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/chabak?serverTimezone=Asia/Seoul", MAIN_USER_ID, PASSWORD);
         }
         return connection;
     }

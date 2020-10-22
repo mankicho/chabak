@@ -1,5 +1,7 @@
 package domain;
 
+import java.io.PrintWriter;
+
 public class Chabak {
     private String place_name; // 장소 명
     private String address; // 주소
@@ -87,6 +89,6 @@ public class Chabak {
 
     @Override
     public String toString() {
-        return this.place_name;
+        return this.place_name + ":" + this.address + ":" + this.utility + ":" + this.notify + ":" + totalVisitNum + ":" + todayVisitNum + ":" + latitude + ":" + longitude;
     }
 }

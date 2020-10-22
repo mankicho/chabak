@@ -42,6 +42,7 @@ public class ChabakRepository {
     }
 
     public List<Chabak> searchByKeyword(String keyword) {
+        System.out.println(keyword);
         return chabaks.stream().filter(loc -> (loc.getAddress() + loc.getPlace_name() + loc.getUtility() + loc.getNotify()).contains(keyword))
                 .collect(Collectors.toList());
     }
