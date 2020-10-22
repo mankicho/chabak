@@ -28,8 +28,8 @@ public class ChabakRepository {
 
             while (rs.next()) {
                 chabaks.add(new Chabak(rs.getString(1), rs.getString(2), rs.getString(3)
-                        , rs.getString(4), rs.getInt(5), rs.getInt(6),
-                        rs.getDouble(7), rs.getDouble(8)));
+                        , rs.getString(4), rs.getString(5), rs.getString(6),
+                        rs.getInt(7), rs.getDouble(8), rs.getDouble(9)));
             }
             System.out.println(chabaks);
         } catch (SQLException e) {
@@ -42,6 +42,7 @@ public class ChabakRepository {
     }
 
     public List<Chabak> searchByKeyword(String keyword) {
+        System.out.println(keyword);
         return chabaks.stream().filter(loc -> (loc.getAddress() + loc.getPlace_name() + loc.getUtility() + loc.getNotify()).contains(keyword))
                 .collect(Collectors.toList());
     }
