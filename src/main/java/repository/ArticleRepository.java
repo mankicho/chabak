@@ -41,18 +41,18 @@ public class ArticleRepository {
         System.out.println(memberDir.toString());
         String imagePath = "";
         String today = DateUtil.simpleFormat(new Date());
-        if (article.getImage() != null) {
-            Image image = article.getImage();
-
-            imagePath = memberDir + "\\" + today;
-            System.out.println(imagePath);
-            try {
-                ImageIO.write((RenderedImage) image, "jpg", new File(imagePath));
-            } catch (IOException e) {
-                System.out.println("무슨에러냐? : " + e.getMessage());
-            }
-
-        }
+//        if (article.getImage() != null) {
+//            Image image = article.getImage();
+//
+//            imagePath = memberDir + "\\" + today;
+//            System.out.println(imagePath);
+//            try {
+//                ImageIO.write((RenderedImage) image, "jpg", new File(imagePath));
+//            } catch (IOException e) {
+//                System.out.println("무슨에러냐? : " + e.getMessage());
+//            }
+//
+//        }
         String query = "insert into cb_article values (?,?,?,?,?)";
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -70,6 +70,33 @@ public class ArticleRepository {
 
     }
 
+    public Article selectOneArticle(String memberId, String createTime) {
+        Article article = null;
+        try {
+            String query = "SELECT * FROM cb_article WHERE memberId = ? AND createTime = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, memberId);
+            pstmt.setString(2, createTime);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String id = rs.getString(1);
+                String title = rs.getString(2);
+                String content = rs.getString(3);
+                String path = rs.getString(4);
+                String cTime = rs.getString(5);
+
+                article = new Article(id, title, content, path, cTime);
+            }
+        } catch (SQLException e) {
+            System.out.println("잘못된 요청입니다.");
+        }
+
+        return article;
+    }
+
     public void update() {
 
     }
@@ -79,8 +106,4 @@ public class ArticleRepository {
 
     }
 
-    public List<Article> select(Member member) {
-        List<Article> articles = new ArrayList<>();
-        return articles;
-    }
 }

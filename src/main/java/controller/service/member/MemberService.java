@@ -1,18 +1,14 @@
 package controller.service.member;
 
-import crypto.CryptoUtil;
+import domain.Chabak;
 import domain.Member;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import repository.MemberRepository;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/member")
@@ -55,5 +51,12 @@ public class MemberService {
         System.out.println(id+","+nickName+","+password);
 
         return memberRepository.update(id, nickName, password);
+    }
+
+    @RequestMapping(value = "/getJJim.do")
+    public List<Chabak> getJjimList(HttpServletRequest request){
+        String id = request.getParameter("id");
+
+        return memberRepository.getJJimList(id);
     }
 }

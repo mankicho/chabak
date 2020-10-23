@@ -6,23 +6,23 @@ public class Article {
     private String memberId;
     private String title;
     private String content;
-    private Image image;
+    private String urlPath;
     private String createTime;
 
-    public Article(String memberId, String title, String content, Image image, String createTime) {
+    public Article(String memberId, String title, String content, String urlPath, String createTime) {
         this.memberId = memberId;
         this.title = title;
         this.content = content;
-        this.image = image;
+        this.urlPath = urlPath;
         this.createTime = createTime;
     }
 
-    public Image getImage() {
-        return image;
+    public String getMemberId() {
+        return memberId;
     }
 
-    public void setImage(Image image) {
-        this.image = image;
+    public void setMemberId(String memberId) {
+        this.memberId = memberId;
     }
 
     public String getTitle() {
@@ -41,12 +41,12 @@ public class Article {
         this.content = content;
     }
 
-    public String getMemberId() {
-        return memberId;
+    public String getUrlPath() {
+        return urlPath;
     }
 
-    public void setMemberId(String memberId) {
-        this.memberId = memberId;
+    public void setUrlPath(String urlPath) {
+        this.urlPath = urlPath;
     }
 
     public String getCreateTime() {

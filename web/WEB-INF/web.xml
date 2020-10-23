@@ -16,6 +16,7 @@
         <servlet-name>AxisServlet</servlet-name>
         <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
     </servlet>
+
     <servlet>
         <display-name>Axis Admin Servlet</display-name>
         <servlet-name>AdminServlet</servlet-name>
@@ -66,4 +67,5 @@
         <extension>wsdl</extension>
         <mime-type>text/xml</mime-type>
     </mime-mapping>
+
 </web-app>
