@@ -20,7 +20,7 @@ public class MemberService {
     }
 
     @RequestMapping(value = "/login.do")
-    public Member login(HttpServletRequest request) throws Exception {
+    public String login(HttpServletRequest request) throws Exception {
         String userId = request.getParameter("id");
         String userPassword = request.getParameter("password");
         return memberRepository.select(userId, userPassword);
@@ -36,27 +36,35 @@ public class MemberService {
         return memberRepository.insert(member);
     }
 
-    @RequestMapping(value = "/select.do")
-    public Member select(HttpServletRequest request) {
-        String id = request.getParameter("id");
-        String password = request.getParameter("password");
-        return memberRepository.select(id, password);
-    }
+//    @RequestMapping(value = "/select.do")
+//    public Member select(HttpServletRequest request) {
+//        String id = request.getParameter("id");
+//        String password = request.getParameter("password");
+//        return memberRepository.select(id, password);
+//    }
 
     @RequestMapping(value = "/update.do")
     public String update(HttpServletRequest request, HttpServletResponse response) {
         String id = request.getParameter("id");
         String nickName = request.getParameter("nickName");
         String password = request.getParameter("password");
-        System.out.println(id+","+nickName+","+password);
+        System.out.println(id + "," + nickName + "," + password);
 
         return memberRepository.update(id, nickName, password);
     }
 
     @RequestMapping(value = "/getJJim.do")
-    public List<Chabak> getJjimList(HttpServletRequest request){
+    public List<Chabak> getJjimList(HttpServletRequest request) {
         String id = request.getParameter("id");
 
         return memberRepository.getJJimList(id);
+    }
+
+    @RequestMapping(value = "/jjim.do")
+    public String jjimDo(HttpServletRequest request) {
+        String id = request.getParameter("id");
+        String placeName = request.getParameter("placeName");
+
+        return memberRepository.jjimDo(id, placeName);
     }
 }

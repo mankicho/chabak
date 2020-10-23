@@ -49,7 +49,7 @@ public class ChabakRepository {
 
     public List<Chabak> getChabaks(int num) {
         List<Chabak> returnList = new ArrayList<>();
-        for (int i = num; i < num + 10 && i < chabaks.size(); i++) {
+        for (int i = num*10; i < num*10+10 && i < chabaks.size(); i++) {
             returnList.add(chabaks.get(i));
         }
         return returnList;

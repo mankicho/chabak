@@ -43,7 +43,7 @@ public class MemberRepository {
 
     }
 
-    public Member select(String id, String pw) {
+    public String select(String id, String pw) {
         String query = "select * from cb_member where userId = ? AND pw = ?";
 
         try {
@@ -54,14 +54,11 @@ public class MemberRepository {
             System.out.println(CryptoUtil.encryptAES256(pw, pw.hashCode() + ""));
 
             if (rs.next()) {
-                Member member = new Member(rs.getString(1), rs.getString(2), rs.getString(3));
-                System.out.println(member);
-                return member;
-            } else {
-                return new Member("", "", "");
+                return rs.getString(1);
             }
+            return "false";
         } catch (Exception e) {
-            return new Member("", "", "");
+            return "false";
         }
     }
 
@@ -84,12 +81,27 @@ public class MemberRepository {
         }
     }
 
+    public String jjimDo(String id, String placeName) {
+        String query = "INSERT INTO cb_jjim_list values (?,?)";
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, id);
+            pstmt.setString(2, placeName);
+
+            pstmt.execute();
+            return "true";
+        } catch (SQLException e) {
+            return "false";
+        }
+    }
+
     public List<Chabak> getJJimList(String id) {
         List<Chabak> result = new ArrayList<>();
         try {
-            String query = "SELECT cb_chabak_location.*" +
-                    "from cb_jjim_list,cb_chabak_location" +
-                    "where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
+            String query = "SELECT cb_chabak_location.*\" +\n" +
+                    "                    \"from cb_jjim_list,cb_chabak_location\" +\n" +
+                    "                    \"where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
