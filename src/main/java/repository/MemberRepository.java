@@ -96,6 +96,21 @@ public class MemberRepository {
         }
     }
 
+    public String jjimUndo(String id, String placeName){
+        String query = "DELETE FROM cb_jjim_list where id = ? AND chabak_name = ?";
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, id);
+            pstmt.setString(2, placeName);
+
+            pstmt.execute();
+            return "true";
+        } catch (SQLException e) {
+            return "false";
+        }
+    }
+
     public List<Chabak> getJJimList(String id) {
         List<Chabak> result = new ArrayList<>();
         try {

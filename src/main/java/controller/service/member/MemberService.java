@@ -67,4 +67,12 @@ public class MemberService {
 
         return memberRepository.jjimDo(id, placeName);
     }
+
+    @RequestMapping(value = "/jjim.undo")
+    public String jjimUndo(HttpServletRequest request) {
+        String id = request.getParameter("id");
+        String placeName = request.getParameter("placeName");
+
+        return memberRepository.jjimUndo(id, placeName);
+    }
 }
