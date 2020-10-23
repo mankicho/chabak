@@ -21,7 +21,7 @@ public class ChabakService {
         repository = new ChabakRepository();
     }
 
-    @RequestMapping(value = "get")
+    @RequestMapping(value = "get.do")
     public List<Chabak> getAllChabaks(HttpServletRequest request) {
         String num = request.getParameter("num");
         int n;
@@ -34,17 +34,20 @@ public class ChabakService {
         return repository.getChabaks(n);
     }
 
-    @RequestMapping(value = "getKey")
+    @RequestMapping(value = "getKey.do")
     public List<Chabak> searchByKeyword(HttpServletRequest request, HttpServletResponse response) {
         String key = request.getParameter("key");
         return repository.searchByKeyword(key);
     }
 
-    @RequestMapping(value = "getAds")
+    @RequestMapping(value = "getAds.do")
     public List<Chabak> searchByAddress(HttpServletRequest request, HttpServletResponse response) {
         String address = request.getParameter("address");
         return repository.searchByAddress(address);
     }
 
+//    @RequestMapping(value = "getFiltered.do"){
+//
+//    }
 }
 
