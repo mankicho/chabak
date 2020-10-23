@@ -9,6 +9,7 @@ import repository.MemberRepository;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Scanner;
 
 @RestController
 @RequestMapping(value = "/member")
@@ -65,6 +66,7 @@ public class MemberService {
         String id = request.getParameter("id");
         String placeName = request.getParameter("placeName");
 
+        System.out.println("id = " + id + ", placeName " + placeName);
         return memberRepository.jjimDo(id, placeName);
     }
 
