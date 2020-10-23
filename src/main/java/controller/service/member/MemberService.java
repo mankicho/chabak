@@ -1,5 +1,6 @@
 package controller.service.member;
 
+import domain.Chabak;
 import domain.Member;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -7,6 +8,7 @@ import repository.MemberRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/member")
@@ -49,5 +51,12 @@ public class MemberService {
         System.out.println(id+","+nickName+","+password);
 
         return memberRepository.update(id, nickName, password);
+    }
+
+    @RequestMapping(value = "/getJJim.do")
+    public List<Chabak> getJjimList(HttpServletRequest request){
+        String id = request.getParameter("id");
+
+        return memberRepository.getJJimList(id);
     }
 }

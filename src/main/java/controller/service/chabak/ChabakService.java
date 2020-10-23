@@ -22,14 +22,21 @@ public class ChabakService {
     }
 
     @RequestMapping(value = "get")
-    public List<Chabak> getAllChabaks() {
-        return repository.getChabaks();
+    public List<Chabak> getAllChabaks(HttpServletRequest request) {
+        String num = request.getParameter("num");
+        int n;
+        try {
+            n = Integer.parseInt(num);
+        } catch (NumberFormatException e) {
+            n = 0;
+        }
+        // 2초 정도 걸리는작업이라고 가정.
+        return repository.getChabaks(n);
     }
 
     @RequestMapping(value = "getKey")
     public List<Chabak> searchByKeyword(HttpServletRequest request, HttpServletResponse response) {
         String key = request.getParameter("key");
-        System.out.println(key);
         return repository.searchByKeyword(key);
     }
 
@@ -38,4 +45,6 @@ public class ChabakService {
         String address = request.getParameter("address");
         return repository.searchByAddress(address);
     }
+
 }
+

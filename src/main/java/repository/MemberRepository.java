@@ -2,6 +2,7 @@ package repository;
 
 import crypto.CryptoUtil;
 import database.DatabaseConnection;
+import domain.Chabak;
 import domain.Member;
 import util.ConsoleUtil;
 
@@ -9,6 +10,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MemberRepository {
 
@@ -78,6 +81,36 @@ public class MemberRepository {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return "false";
+        }
+    }
+
+    public List<Chabak> getJJimList(String id) {
+        List<Chabak> result = new ArrayList<>();
+        try {
+            String query = "SELECT cb_chabak_location.*" +
+                    "from cb_jjim_list,cb_chabak_location" +
+                    "where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String placeName = rs.getString(1);
+                String address = rs.getString(2);
+                String utility = rs.getString(3);
+                String notify = rs.getString(4);
+                String introduce = rs.getString(5);
+                String filePath = rs.getString(6);
+                int jjim = rs.getInt(7);
+                double latitude = rs.getDouble(8);
+                double longitude = rs.getDouble(9);
+
+                result.add(new Chabak(placeName, address, utility, notify, introduce, filePath, jjim, latitude, longitude));
+            }
+
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

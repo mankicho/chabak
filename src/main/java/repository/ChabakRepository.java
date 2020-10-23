@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class ChabakRepository {
     Connection connection;
 
-    private List<Chabak> chabaks;
+    private final List<Chabak> chabaks;
 
     public ChabakRepository() {
         chabaks = new ArrayList<>();
@@ -31,7 +31,7 @@ public class ChabakRepository {
                         , rs.getString(4), rs.getString(5), rs.getString(6),
                         rs.getInt(7), rs.getDouble(8), rs.getDouble(9)));
             }
-            System.out.println(chabaks);
+
         } catch (SQLException e) {
             ConsoleUtil.dbConnectError(e);
         }
@@ -47,7 +47,11 @@ public class ChabakRepository {
                 .collect(Collectors.toList());
     }
 
-    public List<Chabak> getChabaks() {
-        return chabaks;
+    public List<Chabak> getChabaks(int num) {
+        List<Chabak> returnList = new ArrayList<>();
+        for (int i = num; i < num + 10 && i < chabaks.size(); i++) {
+            returnList.add(chabaks.get(i));
+        }
+        return returnList;
     }
 }
