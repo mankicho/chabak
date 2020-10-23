@@ -44,20 +44,20 @@ public class MemberRepository {
     }
 
     public String select(String id, String pw) {
-        String query = "select * from cb_member where userId = ? AND pw = ?";
+        String query = "select * from cb_member where memberId = ? AND password = ?";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
             pstmt.setString(2, CryptoUtil.encryptAES256(pw, pw.hashCode() + ""));
             ResultSet rs = pstmt.executeQuery();
-            System.out.println(CryptoUtil.encryptAES256(pw, pw.hashCode() + ""));
 
             if (rs.next()) {
                 return rs.getString(1);
             }
             return "false";
         } catch (Exception e) {
+            e.printStackTrace();
             return "false";
         }
     }
