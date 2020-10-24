@@ -3,7 +3,7 @@ package repository;
 import crypto.CryptoUtil;
 import database.DatabaseConnection;
 import domain.Chabak;
-import domain.Member;
+import domain.member.Member;
 import util.ConsoleUtil;
 
 import java.sql.Connection;

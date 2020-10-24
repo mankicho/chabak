@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import repository.ArticleRepository;
 
@@ -21,39 +22,30 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 
-@Controller
+@RestController
 @RequestMapping(value = "/article")
 public class ArticleService {
 
     ArticleRepository articleRepository = new ArticleRepository();
 
     @RequestMapping(value = "/selectOne.do")
-    public void select(HttpServletRequest request, HttpServletResponse response) {
-        String id = request.getParameter("id");
-        String time = request.getParameter("response");
+    public Article select(HttpServletRequest request, HttpServletResponse response) {
+        String articleId = request.getParameter("articleId");
+        int id = Integer.parseInt(articleId);
 
-        Article article = articleRepository.selectOneArticle(id, time);
+        Article article = articleRepository.selectOneArticle(id);
 
-        try {
-            PrintWriter printWriter = response.getWriter();
-            printWriter.println("id=" + article.getMemberId() + "\n");
-            printWriter.println("title=" + article.getTitle() + "\n");
-            printWriter.println("content=" + article.getContent() + "\n");
-            printWriter.println("urlPath=" + article.getUrlPath() + "\n");
-            printWriter.println("createTime=" + article.getCreateTime() + "\n");
-
-            printWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return article;
     }
 
     @RequestMapping(value = "insert.do")
-    public void insertArticle(HttpServletRequest request, HttpServletResponse response) {
+    public String insertArticle(HttpServletRequest request, HttpServletResponse response) {
         String memberId = request.getParameter("id");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String urlPath = request.getParameter("urlPath");
         String createTime = request.getParameter("createTime");
+
+        return articleRepository.insert(memberId, title, content, urlPath, createTime);
     }
 }

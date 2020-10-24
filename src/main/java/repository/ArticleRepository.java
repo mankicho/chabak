@@ -2,15 +2,11 @@ package repository;
 
 import database.DatabaseConnection;
 import domain.Article;
-import domain.Member;
 import util.ConsoleUtil;
 import util.DateUtil;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.RenderedImage;
 import java.io.File;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,77 +14,90 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Stack;
 
 public class ArticleRepository {
 
-    private String filePath = "C:\\Users\\82102\\Desktop\\java\\chabak_server\\src\\main\\resources\\";
+    private String filePath = "web/resources/";
     private Connection con;
+
+    private final List<Article> articles = new ArrayList<>();
 
     public ArticleRepository() {
         try {
             con = DatabaseConnection.get();
+
+            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM cb_article ORDER BY articleId desc");
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int articleId = rs.getInt(1);
+                String memberId = rs.getString(2);
+                String title = rs.getString(3);
+                String content = rs.getString(4);
+                String imagePath = rs.getString(5);
+                String createTime = rs.getString(6);
+
+                articles.add(new Article(articleId, memberId, title, content, imagePath, createTime));
+            }
         } catch (SQLException e) {
             ConsoleUtil.dbConnectError(e);
         }
     }
 
 
-    public void insert(Article article) {
-        File memberDir = new File(filePath + article.getMemberId());
+    public String insert(String memberId, String title, String content, String path, String createTime) {
+        File memberDir = new File(filePath + memberId);
         if (!memberDir.exists()) {
             memberDir.mkdir();
         }
         System.out.println(memberDir.toString());
-        String imagePath = "";
-        String today = DateUtil.simpleFormat(new Date());
-//        if (article.getImage() != null) {
-//            Image image = article.getImage();
-//
-//            imagePath = memberDir + "\\" + today;
-//            System.out.println(imagePath);
-//            try {
-//                ImageIO.write((RenderedImage) image, "jpg", new File(imagePath));
-//            } catch (IOException e) {
-//                System.out.println("무슨에러냐? : " + e.getMessage());
-//            }
-//
-//        }
-        String query = "insert into cb_article values (?,?,?,?,?)";
+        String query = "insert into cb_article values (?,?,?,?,?) ";
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, article.getMemberId());
-            pstmt.setString(2, article.getTitle());
-            pstmt.setString(3, article.getContent());
-            pstmt.setString(4, imagePath);
-            pstmt.setString(5, today);
+            pstmt.setString(1, memberId);
+            pstmt.setString(2, title);
+            pstmt.setString(3, content);
+            pstmt.setString(4, path);
+            pstmt.setString(5, createTime);
 
             pstmt.execute();
+
+            return "success";
         } catch (SQLException e) {
-            System.out.println("하 에러처리 ㅅㅂ");
+            e.printStackTrace();
+            System.out.println("하 에러처리...");
+            return "false";
         }
-
-
     }
 
-    public Article selectOneArticle(String memberId, String createTime) {
+    public List<Article> get(int num) {
+        List<Article> result = new ArrayList<>();
+        for (int i = num * 10; i < num * 10 + 10; i++) {
+            result.add(articles.get(i));
+        }
+        return result;
+    }
+
+    public Article selectOneArticle(int articleId) {
         Article article = null;
         try {
-            String query = "SELECT * FROM cb_article WHERE memberId = ? AND createTime = ?";
+            String query = "SELECT * FROM cb_article WHERE articleId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
 
-            pstmt.setString(1, memberId);
-            pstmt.setString(2, createTime);
+            pstmt.setInt(1, articleId);
 
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                String id = rs.getString(1);
-                String title = rs.getString(2);
-                String content = rs.getString(3);
-                String path = rs.getString(4);
-                String cTime = rs.getString(5);
+                int artId = rs.getInt(1);
+                String id = rs.getString(2);
+                String title = rs.getString(3);
+                String content = rs.getString(4);
+                String path = rs.getString(5);
+                String cTime = rs.getString(6);
 
-                article = new Article(id, title, content, path, cTime);
+                article = new Article(artId, id, title, content, path, cTime);
             }
         } catch (SQLException e) {
             System.out.println("잘못된 요청입니다.");

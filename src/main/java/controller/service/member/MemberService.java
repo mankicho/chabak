@@ -1,7 +1,7 @@
 package controller.service.member;
 
 import domain.Chabak;
-import domain.Member;
+import domain.member.Member;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import repository.MemberRepository;
@@ -9,7 +9,6 @@ import repository.MemberRepository;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
-import java.util.Scanner;
 
 @RestController
 @RequestMapping(value = "/member")
@@ -37,12 +36,6 @@ public class MemberService {
         return memberRepository.insert(member);
     }
 
-//    @RequestMapping(value = "/select.do")
-//    public Member select(HttpServletRequest request) {
-//        String id = request.getParameter("id");
-//        String password = request.getParameter("password");
-//        return memberRepository.select(id, password);
-//    }
 
     @RequestMapping(value = "/update.do")
     public String update(HttpServletRequest request, HttpServletResponse response) {
