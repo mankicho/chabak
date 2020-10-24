@@ -117,6 +117,7 @@ public class ArticleRepository {
             }
         } catch (SQLException e) {
             System.out.println("잘못된 요청입니다.");
+            e.printStackTrace();
             return new ArrayList<>();
         }
 
