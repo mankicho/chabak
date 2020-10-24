@@ -28,7 +28,7 @@ public class ArticleService {
     }
 
     @RequestMapping(value = "/selectOne.do")
-    public Article select(HttpServletRequest request, HttpServletResponse response) {
+    public List<Article> select(HttpServletRequest request, HttpServletResponse response) {
         String articleId = request.getParameter("articleId");
         int id = Integer.parseInt(articleId);
 

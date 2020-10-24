@@ -95,8 +95,8 @@ public class ArticleRepository {
         return -1;
     }
 
-    public Article selectOneArticle(int articleId) {
-        Article article = null;
+    public List<Article> selectOneArticle(int articleId) {
+        List<Article> list = new ArrayList<>();
         try {
             String query = "SELECT * FROM cb_article WHERE articleId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -113,13 +113,14 @@ public class ArticleRepository {
                 String path = rs.getString(5);
                 String cTime = rs.getString(6);
 
-                article = new Article(artId, id, title, content, path, cTime);
+                list.add(new Article(artId, id, title, content, path, cTime));
             }
         } catch (SQLException e) {
             System.out.println("잘못된 요청입니다.");
+            return new ArrayList<>();
         }
 
-        return article;
+        return list;
     }
 
     public void update() {
