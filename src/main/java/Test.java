@@ -15,10 +15,7 @@ import javax.servlet.http.Part;
         urlPatterns = {"/FileUploadTest"},
         loadOnStartup = 1
 )
-@MultipartConfig(
-        maxFileSize = 1024 * 1024 * 5,
-        maxRequestSize = 1024 * 1024 * 50
-)
+
 public class Test extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -5,6 +5,7 @@ import domain.Article;
 import util.ConsoleUtil;
 import util.DateUtil;
 
+import javax.servlet.http.Part;
 import java.awt.*;
 import java.io.File;
 import java.sql.Connection;
@@ -18,28 +19,11 @@ import java.util.Stack;
 
 public class ArticleRepository {
 
-    private String filePath = "web/resources/";
     private Connection con;
-
-    private final List<Article> articles = new ArrayList<>();
 
     public ArticleRepository() {
         try {
             con = DatabaseConnection.get();
-
-            PreparedStatement pstmt = con.prepareStatement("SELECT * FROM cb_article ORDER BY articleId desc");
-
-            ResultSet rs = pstmt.executeQuery();
-            while (rs.next()) {
-                int articleId = rs.getInt(1);
-                String memberId = rs.getString(2);
-                String title = rs.getString(3);
-                String content = rs.getString(4);
-                String imagePath = rs.getString(5);
-                String createTime = rs.getString(6);
-
-                articles.add(new Article(articleId, memberId, title, content, imagePath, createTime));
-            }
         } catch (SQLException e) {
             ConsoleUtil.dbConnectError(e);
         }
@@ -47,12 +31,8 @@ public class ArticleRepository {
 
 
     public String insert(String memberId, String title, String content, String path, String createTime) {
-        File memberDir = new File(filePath + memberId);
-        if (!memberDir.exists()) {
-            memberDir.mkdir();
-        }
-        System.out.println(memberDir.toString());
-        String query = "insert into cb_article values (?,?,?,?,?) ";
+
+        String query = "insert into cb_article (memberId,title,content,imagePath,createTime) values (?,?,?,?,?) ";
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, memberId);
@@ -73,10 +53,46 @@ public class ArticleRepository {
 
     public List<Article> get(int num) {
         List<Article> result = new ArrayList<>();
-        for (int i = num * 10; i < num * 10 + 10; i++) {
-            result.add(articles.get(i));
+
+        String query = "SELECT * FROM cb_article " +
+                "WHERE articleId < ? AND isDeleted = 1 ORDER BY articleId DESC LIMIT 10";
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, getNext() - ((num - 1) * 10));
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int articleId = rs.getInt(1);
+                String memberId = rs.getString(2);
+                String title = rs.getString(3);
+                String content = rs.getString(4);
+                String imagePath = rs.getString(5);
+                String createTime = rs.getString(6);
+
+                result.add(new Article(articleId, memberId, title, content, imagePath, createTime));
+            }
+
+            return result;
+        } catch (SQLException e) {
+            return new ArrayList<>();
         }
-        return result;
+    }
+
+    public int getNext() {
+        String SQL = "SELECT articleId FROM cb_article ORDER BY articleId DESC";
+        try {
+            PreparedStatement pstmt = con.prepareStatement(SQL);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) + 1;
+            }
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
     public Article selectOneArticle(int articleId) {

@@ -1,51 +1,56 @@
 package controller.service.article;
 
 import domain.Article;
-import org.apache.axis.utils.IOUtils;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 import repository.ArticleRepository;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 @RestController
 @RequestMapping(value = "/article")
 public class ArticleService {
 
-    ArticleRepository articleRepository = new ArticleRepository();
+    private final ArticleRepository articleRepository = new ArticleRepository();
+    private final String filePath = "/resources/";
+
+    @RequestMapping(value = "/get.do")
+    public List<Article> get(HttpServletRequest request) {
+        String num = request.getParameter("num");
+        int n = Integer.parseInt(num);
+
+        return articleRepository.get(n);
+    }
 
     @RequestMapping(value = "/selectOne.do")
     public Article select(HttpServletRequest request, HttpServletResponse response) {
         String articleId = request.getParameter("articleId");
         int id = Integer.parseInt(articleId);
 
-        Article article = articleRepository.selectOneArticle(id);
-
-        return article;
+        return articleRepository.selectOneArticle(id);
     }
 
-    @RequestMapping(value = "insert.do")
+    @RequestMapping(value = "/insert.do")
     public String insertArticle(HttpServletRequest request, HttpServletResponse response) {
         String memberId = request.getParameter("id");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
-        String urlPath = request.getParameter("urlPath");
+        String isAttached = request.getParameter("isAttached"); // 사진보냈다 flag
         String createTime = request.getParameter("createTime");
+        String fileName = request.getParameter("fileName");
+        System.out.println(memberId + "," + title + "," + content + "," + createTime);
+        String urlPath = "";
+        if (!isAttached.equals("")) {
+            urlPath = filePath + memberId + "/" + fileName;
+        }
 
         return articleRepository.insert(memberId, title, content, urlPath, createTime);
     }
+
+
 }

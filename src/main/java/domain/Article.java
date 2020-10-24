@@ -64,6 +64,8 @@ public class Article {
     }
 
     public void setCreateTime(String createTime) {
+
         this.createTime = createTime;
     }
+
 }
