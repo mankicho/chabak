@@ -1,13 +1,13 @@
-package domain.utility;
+package domain.facility;
 
 public class Toilet {
-    private String type;
+    private ToiletType type;
     private String address;
     private String openTime;
     private double latitude;
     private double longitude;
 
-    public Toilet(String type, String address, String openTime, double latitude, double longitude) {
+    public Toilet(ToiletType type, String address, String openTime, double latitude, double longitude) {
         this.type = type;
         this.address = address;
         this.openTime = openTime;
@@ -15,7 +15,7 @@ public class Toilet {
         this.longitude = longitude;
     }
 
-    public String getType() {
+    public ToiletType getType() {
         return type;
     }
 
@@ -33,5 +33,9 @@ public class Toilet {
 
     public double getLongitude() {
         return longitude;
+    }
+
+    public String toString() {
+        return address + "," + type;
     }
 }

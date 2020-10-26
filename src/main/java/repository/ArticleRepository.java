@@ -25,7 +25,7 @@ public class ArticleRepository {
         try {
             con = DatabaseConnection.get();
         } catch (SQLException e) {
-            ConsoleUtil.dbConnectError(e);
+            ConsoleUtil.exceptionPrint(e);
         }
     }
 

@@ -46,8 +46,6 @@ public class ChabakService {
         return repository.searchByAddress(address);
     }
 
-//    @RequestMapping(value = "getFiltered.do"){
-//
-//    }
+//    @RequestMapping(value = "getFiltered.do")
 }
 

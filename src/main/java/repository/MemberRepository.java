@@ -21,7 +21,7 @@ public class MemberRepository {
         try {
             con = DatabaseConnection.get();
         } catch (SQLException e) {
-            ConsoleUtil.dbConnectError(e);
+            ConsoleUtil.exceptionPrint(e);
         }
     }
 
