@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "chabak")
+@RequestMapping(value = "/chabak")
 public class ChabakService {
     private ChabakRepository repository;
 
@@ -21,7 +21,7 @@ public class ChabakService {
         repository = new ChabakRepository();
     }
 
-    @RequestMapping(value = "get.do")
+    @RequestMapping(value = "/get.do")
     public List<Chabak> getAllChabaks(HttpServletRequest request) {
         String num = request.getParameter("num");
         int n;
@@ -34,7 +34,7 @@ public class ChabakService {
         return repository.getChabaks(n);
     }
 
-    @RequestMapping(value = "getKey.do")
+    @RequestMapping(value = "/getKey.do")
     public List<Chabak> searchByKeyword(HttpServletRequest request, HttpServletResponse response) {
         String key = request.getParameter("key");
         return repository.searchByKeyword(key);

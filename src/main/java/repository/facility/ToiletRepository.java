@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ToiletRepository {
-    private final String FILE_PATH = "C:\\Users\\skxz1_000\\Desktop\\java\\chabak_file\\전국공중화장실표준데이터.csv";
+    private final String FILE_PATH = "C:\\Users\\82102\\Desktop\\java\\chabak_file\\전국공중화장실표준데이터.csv";
     private final List<Toilet> toilets = new ArrayList<>();
     private Map<String, List<Toilet>> groupingToilets = new HashMap<>();
 
