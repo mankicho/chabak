@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.List;
 
 @RestController
@@ -29,6 +30,11 @@ public class ChabakService {
             n = Integer.parseInt(num);
         } catch (NumberFormatException e) {
             n = 0;
+        }
+        Enumeration<String> stringEnumeration = request.getHeaderNames();
+        while (stringEnumeration.hasMoreElements()) {
+            String header = stringEnumeration.nextElement();
+            System.out.println(header + ": " + request.getHeader(header));
         }
         // 2초 정도 걸리는작업이라고 가정.
         return repository.getChabaks(n);
