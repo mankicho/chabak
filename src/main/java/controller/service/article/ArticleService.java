@@ -17,10 +17,12 @@ import java.util.Random;
 public class ArticleService {
 
     private final ArticleRepository articleRepository = new ArticleRepository();
-    private final String filePath = "/resources/";
+    private final String filePath = "/resources/member/";
 
     @RequestMapping(value = "/get.do")
     public List<Article> get(HttpServletRequest request) {
+        System.out.println(getClass().getName()+" is called article");
+
         String num = request.getParameter("num");
         int n = Integer.parseInt(num);
 

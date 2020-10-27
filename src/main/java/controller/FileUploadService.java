@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 
 @WebServlet(
@@ -25,11 +26,14 @@ import java.io.IOException;
         maxRequestSize = 1024 * 1024 * 50
 )
 public class FileUploadService extends HttpServlet {
-    private final String filePath = "C:\\Users\\skxz1_000\\Desktop\\java\\chabak\\web\\resources\\";
+    private final String filePath = "C:\\Users\\skxz1_000\\Desktop\\java\\chabak\\web\\resources\\member\\";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String memberId = request.getParameter("id");
+        System.out.println("fileUpLoadService is called ==> " + memberId);
+
+        PrintWriter pw = resp.getWriter();
         try {
             File memberDir = new File(filePath + memberId);
             if (!memberDir.exists()) {
@@ -41,9 +45,14 @@ public class FileUploadService extends HttpServlet {
             if (!fileName.isEmpty()) {
                 // 파일을 저장할 서버상의 경로
                 part.write(fileSavePath + "\\" + fileName);
+
+                pw.write("Success");
+                pw.flush();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            pw.write("fail");
+            pw.flush();
         }
     }
 

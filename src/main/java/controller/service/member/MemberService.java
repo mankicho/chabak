@@ -21,6 +21,8 @@ public class MemberService {
 
     @RequestMapping(value = "/login.do")
     public String login(HttpServletRequest request) throws Exception {
+        System.out.println(getClass().getName()+" is called login");
+
         String userId = request.getParameter("id");
         String userPassword = request.getParameter("password");
         return memberRepository.select(userId, userPassword);
@@ -28,6 +30,8 @@ public class MemberService {
 
     @RequestMapping(value = "/insert.do")
     public String register(HttpServletRequest request) {
+        System.out.println(getClass().getName()+" insert");
+
         String id = request.getParameter("id");
         String nickName = request.getParameter("nickName");
         String pw = request.getParameter("password");

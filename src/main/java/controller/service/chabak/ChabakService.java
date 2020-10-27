@@ -24,17 +24,13 @@ public class ChabakService {
 
     @RequestMapping(value = "/get.do")
     public List<Chabak> getAllChabaks(HttpServletRequest request) {
+        System.out.println(getClass().getName()+" is called");
         String num = request.getParameter("num");
         int n;
         try {
             n = Integer.parseInt(num);
         } catch (NumberFormatException e) {
             n = 0;
-        }
-        Enumeration<String> stringEnumeration = request.getHeaderNames();
-        while (stringEnumeration.hasMoreElements()) {
-            String header = stringEnumeration.nextElement();
-            System.out.println(header + ": " + request.getHeader(header));
         }
         // 2초 정도 걸리는작업이라고 가정.
         return repository.getChabaks(n);

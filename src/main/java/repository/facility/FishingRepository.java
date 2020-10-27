@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FishingRepository {
-    private final String FILE_PATH = "C:\\Users\\82102\\Desktop\\java\\" +
+    private final String FILE_PATH = "C:\\Users\\skxz1_000\\Desktop\\java\\" +
             "chabak_file\\전국낚시터정보표준데이터.csv";
 
     private List<FishingSpot> fishingSpots;
