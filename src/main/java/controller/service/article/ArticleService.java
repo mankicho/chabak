@@ -45,6 +45,7 @@ public class ArticleService {
         String isAttached = request.getParameter("isAttached"); // 사진보냈다 flag
         String createTime = request.getParameter("createTime");
         String fileName = request.getParameter("fileName");
+        System.out.println(fileName + " ==> is called");
         System.out.println(memberId + "," + title + "," + content + "," + createTime);
         String urlPath = "";
         if (!isAttached.equals("")) {

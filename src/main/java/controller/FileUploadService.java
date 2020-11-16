@@ -41,6 +41,7 @@ public class FileUploadService extends HttpServlet {
             }
             Part part = request.getPart("image");
             String fileName = getFilename(part);
+            System.out.println("upload = " + fileName);
             String fileSavePath = filePath + memberId;
             if (!fileName.isEmpty()) {
                 // 파일을 저장할 서버상의 경로

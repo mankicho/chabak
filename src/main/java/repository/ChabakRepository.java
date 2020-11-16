@@ -2,77 +2,100 @@ package repository;
 
 import database.DatabaseConnection;
 import domain.Chabak;
-import domain.facility.FishingSpot;
+import domain.facility.Fishing;
 import domain.facility.Toilet;
+import domain.facility.Utility;
 import repository.facility.FishingRepository;
 import repository.facility.ToiletRepository;
-import util.ConsoleUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 public class ChabakRepository {
-    Connection connection;
+    private Connection con;
     private final List<Chabak> chabaks;
-    private final Map<Chabak, List<Toilet>> chabaksWithToilets;
-
     private final ToiletRepository toiletRepository;
     private final FishingRepository fishingRepository;
-    private final Map<String, List<Toilet>> toiletsMap;
-    private final Map<String, List<FishingSpot>> fishingsMap;
+    private final Map<Chabak, List<Utility>> chabakWithUtility;
     private final int TOILET_BOUND = 500;
 
 
     public ChabakRepository() {
         chabaks = new ArrayList<>();
-        chabaksWithToilets = new HashMap<>();
+        chabakWithUtility = new HashMap<>();
         toiletRepository = new ToiletRepository();
         fishingRepository = new FishingRepository();
-        toiletsMap = toiletRepository.getGroupingToilets();
-        fishingsMap = fishingRepository.getGroupingFishingSpots();
+        List<Toilet> toilets = toiletRepository.getToiletList();
+        List<Fishing> fishings = fishingRepository.getFishingSpots();
         try {
-            connection = DatabaseConnection.get();
-            PreparedStatement pstmt = connection.prepareStatement(
-                    "SELECT * from cb_chabak_location"
-            );
+            con = DatabaseConnection.get();
+
+            String query = "select * from cb_chabak_location";
+            PreparedStatement pstmt = con.prepareStatement(query);
+
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                chabaks.add(new Chabak(rs.getString(1), rs.getString(2), rs.getString(3)
-                        , rs.getString(4), rs.getString(5), rs.getString(6),
-                        rs.getInt(7), rs.getDouble(8), rs.getDouble(9)));
+                String name = rs.getString(1);
+                String add = rs.getString(2);
+                String intro = rs.getString(3);
+                String fileP = rs.getString(4);
+                int jjim = rs.getInt(5);
+                double lat = rs.getDouble(6);
+                double lng = rs.getDouble(7);
+                String pNum = rs.getString(8);
+                chabaks.add(new Chabak(name, add, intro, fileP, jjim, lat, lng, pNum));
             }
-            chabaks.parallelStream().forEach(data -> {
-                String add = data.getAddress();
-                String[] tmp = add.split(" ");
-                add = tmp[0] + " " + tmp[1];
-                chabaksWithToilets.putIfAbsent(data, new ArrayList<>());
-                List<Toilet> toilets = toiletsMap.get(add);
 
-                if (toilets != null) {
-                    toilets.forEach(t -> {
-                        if (distance(t.getLatitude(), t.getLongitude(), data.getLatitude(), data.getLongitude()
-                                , "meter") <= 500) {
-                            chabaksWithToilets.get(data).add(t);
+            chabaks.parallelStream().forEach(cha -> {
+                chabakWithUtility.putIfAbsent(cha, new ArrayList<>());
+                toilets.parallelStream().filter(to -> distance(cha.getLatitude(), cha.getLongitude(), to.getLat(),
+                        to.getLng(), "meter") <= 500).filter(to -> {
+                    List<Utility> list = chabakWithUtility.get(cha);
+                    for (Utility utility : list) {
+                        if (utility instanceof Toilet) {
+                            Toilet t = (Toilet) utility;
+                            if (distance(t.getLat(), t.getLng(), to.getLat(), to.getLng(), "meter") <= 10) {
+                                return false;
+                            }
+                        } else {
+                            return false;
                         }
-                    });
-                }
-            });
-            System.out.println(chabaksWithToilets);
+                    }
+                    return true;
+                }).forEach(data -> cha.getUtils().add(data)); // cha 마다 조건에맞는 화장실 넣기
 
-        } catch (SQLException e) {
-            ConsoleUtil.exceptionPrint(e);
+                fishings.parallelStream()
+                        .filter(fi -> distance(cha.getLatitude(), cha.getLongitude(), fi.getLat(), fi.getLng(), "meter") <= 500)
+                        .filter(fi -> {
+                            List<Utility> list = chabakWithUtility.get(cha);
+                            for (Utility utility : list) {
+                                if (utility instanceof Fishing) {
+                                    Fishing f = (Fishing) utility;
+                                    if (distance(f.getLat(), f.getLng(), fi.getLat(), fi.getLng(), "meter") <= 10) {
+                                        return false;
+                                    }
+                                } else {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }).forEach(data -> cha.getUtils().add(data)); // 낚시터
+            });
+
+            chabakWithUtility.entrySet().forEach(System.out::println);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -82,7 +105,7 @@ public class ChabakRepository {
 
     public List<Chabak> searchByKeyword(String keyword) {
         System.out.println(keyword);
-        return chabaks.stream().filter(loc -> (loc.getAddress() + loc.getPlace_name() + loc.getUtility() + loc.getNotify()).contains(keyword))
+        return chabaks.stream().filter(loc -> (loc.getAddress() + loc.getPlace_name()).contains(keyword))
                 .collect(Collectors.toList());
     }
 
@@ -92,6 +115,10 @@ public class ChabakRepository {
             returnList.add(chabaks.get(i));
         }
         return returnList;
+    }
+
+    public List<Chabak> getChabaks() {
+        return this.chabaks;
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -123,5 +150,7 @@ public class ChabakRepository {
         return (rad * 180 / Math.PI);
     }
 
-
+    public Map<Chabak, List<Utility>> getChabakWithUtility() {
+        return chabakWithUtility;
+    }
 }

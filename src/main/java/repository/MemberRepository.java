@@ -97,7 +97,7 @@ public class MemberRepository {
         }
     }
 
-    public String jjimUndo(String id, String placeName){
+    public String jjimUndo(String id, String placeName) {
         String query = "DELETE FROM cb_jjim_list where id = ? AND chabak_name = ?";
 
         try {
@@ -115,8 +115,8 @@ public class MemberRepository {
     public List<Chabak> getJJimList(String id) {
         List<Chabak> result = new ArrayList<>();
         try {
-            String query = "SELECT cb_chabak_location.*\" +\n" +
-                    "                    \"from cb_jjim_list,cb_chabak_location\" +\n" +
+            String query = "SELECT c.*\" +\n" +
+                    "                    \"from cb_jjim_list as l,cb_chabak_location as c\" +\n" +
                     "                    \"where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
@@ -124,15 +124,14 @@ public class MemberRepository {
             while (rs.next()) {
                 String placeName = rs.getString(1);
                 String address = rs.getString(2);
-                String utility = rs.getString(3);
-                String notify = rs.getString(4);
-                String introduce = rs.getString(5);
-                String filePath = rs.getString(6);
-                int jjim = rs.getInt(7);
-                double latitude = rs.getDouble(8);
-                double longitude = rs.getDouble(9);
+                String introduce = rs.getString(3);
+                String filePath = rs.getString(4);
+                int jjim = rs.getInt(5);
+                double latitude = rs.getDouble(6);
+                double longitude = rs.getDouble(7);
+                String phoneNumber = rs.getString(8);
 
-                result.add(new Chabak(placeName, address, utility, notify, introduce, filePath, jjim, latitude, longitude));
+                result.add(new Chabak(placeName, address, introduce, filePath, jjim, latitude, longitude, phoneNumber));
             }
 
             return result;

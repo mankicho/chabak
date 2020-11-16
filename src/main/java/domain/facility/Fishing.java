@@ -1,15 +1,17 @@
 package domain.facility;
 
-public class Toilet extends Utility {
+public class Fishing extends Utility {
     private int util;
-    private int id;
+    private String name;
+    private String type;
     private String address;
     private double lat;
     private double lng;
 
-    public Toilet(int util, int id, String address, double lat, double lng) {
+    public Fishing(int util, String name, String type, String address, double lat, double lng) {
         this.util = util;
-        this.id = id;
+        this.name = name;
+        this.type = type;
         this.address = address;
         this.lat = lat;
         this.lng = lng;
@@ -19,8 +21,12 @@ public class Toilet extends Utility {
         return util;
     }
 
-    public int getId() {
-        return id;
+    public String getName() {
+        return name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getAddress() {
@@ -37,6 +43,7 @@ public class Toilet extends Utility {
 
     @Override
     public String toString() {
-        return "toilet : " + this.id + " " + this.address;
+        return "Fishing : " + this.name + " " + this.type + " " + this.address;
     }
+
 }
