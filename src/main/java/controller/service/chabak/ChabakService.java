@@ -2,6 +2,9 @@ package controller.service.chabak;
 
 import domain.Chabak;
 import domain.facility.Utility;
+import filter.Filter;
+import filter.FishingFilter;
+import filter.ToiletFilter;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,9 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/chabak")
@@ -50,16 +52,36 @@ public class ChabakService {
         return repository.searchByKeyword(key);
     }
 
-    @RequestMapping(value = "getAds.do")
+    @RequestMapping(value = "/getAds.do")
     public List<Chabak> searchByAddress(HttpServletRequest request, HttpServletResponse response) {
         String address = request.getParameter("address");
         return repository.searchByAddress(address);
     }
 
-    @RequestMapping(value = "test.do")
-    public Map<Chabak,List<Utility>> test(){
-        return repository.getChabakWithUtility();
+    @RequestMapping(value = "/eval.do")
+    public boolean userEval(HttpServletRequest request) {
+        String memberId = request.getParameter("mId");
+        int placeId = Integer.parseInt(request.getParameter("pId"));
+        String placeName = request.getParameter("pName");
+        double eval = Double.parseDouble(request.getParameter("eval"));
+        return repository.userEval(memberId, placeId, placeName, eval);
     }
-//    @RequestMapping(value = "getFiltered.do")
+
+    @RequestMapping(value = "/filter.do")
+    public List<Chabak> filter(HttpServletRequest request) {
+        String para = request.getParameter("para");
+
+        String[] split = para.split("s");
+
+        List<Filter> filters = new ArrayList<>();
+        if (split[0].equals("T")) {
+            filters.add(new ToiletFilter());
+        }
+        if (split[1].equals("T")) {
+            filters.add(new FishingFilter());
+        }
+
+        return repository.getFilteredChabaks(filters);
+    }
 }
 

@@ -72,6 +72,7 @@ public class ArticleRepository {
                 result.add(new Article(articleId, memberId, title, content, imagePath, createTime));
             }
 
+            System.out.println("result => " + result);
             return result;
         } catch (SQLException e) {
             return new ArrayList<>();
@@ -86,6 +87,8 @@ public class ArticleRepository {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                System.out.println("getNext => " + rs.getInt(1) + 1);
+
                 return rs.getInt(1) + 1;
             }
             return 1;
