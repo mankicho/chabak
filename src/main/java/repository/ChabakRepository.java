@@ -9,15 +9,12 @@ import filter.Filter;
 import repository.facility.FishingRepository;
 import repository.facility.ToiletRepository;
 
-import javax.rmi.CORBA.Util;
+//import javax.rmi.CORBA.Util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +40,8 @@ public class ChabakRepository {
         try {
             con = DatabaseConnection.get();
 
-            String query = "select * from cb_chabak_location as l inner join cb_chabak_location_filter as f on f.placeId = l.placeId;";
+            String query = "select * from cb_chabak_location l natural join cb_chabak_location_filter f " +
+                    "where f.placeId = l.placeId and l.user_suggest = 0;";
             PreparedStatement pstmt = con.prepareStatement(query);
 
             ResultSet rs = pstmt.executeQuery();
@@ -205,5 +203,35 @@ public class ChabakRepository {
             e.printStackTrace();
         }
         return false;
+    }
+
+
+    /**
+     * 차박지 등록하기
+     */
+    public String suggest(String placeName, String address, String introduce, String phone, String urlPath, double latitude, double longitude){
+
+        String query = "insert into cb_chabak_location " +
+                "(placeName, address, phone_number, introduce, filepath, latitude, longitude, user_suggest)" +
+                " values (?,?,?,?,?,?,?,?) ";
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, placeName);
+            pstmt.setString(2, address);
+            pstmt.setString(3, phone);
+            pstmt.setString(4, introduce);
+            pstmt.setString(5, urlPath);
+            pstmt.setDouble(6, latitude);
+            pstmt.setDouble(7, longitude);
+            pstmt.setInt(8, 1);
+
+            pstmt.execute();
+
+            return "success";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Fail to Suggest Chabakji");
+            return "false";
+        }
     }
 }

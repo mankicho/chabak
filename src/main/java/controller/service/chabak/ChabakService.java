@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/chabak")
 public class ChabakService {
     private ChabakRepository repository;
+    private final String filePath = "/resources/member/";
 
     public ChabakService() {
         repository = new ChabakRepository();
@@ -82,6 +83,23 @@ public class ChabakService {
         }
 
         return repository.getFilteredChabaks(filters);
+    }
+
+    /**
+     * 차박지 등록하기
+     */
+    @RequestMapping(value = "/suggest.do")
+    public String suggest(HttpServletRequest req){
+        String placeName = req.getParameter("placeName");
+        String address = req.getParameter("address");
+        String introduce = req.getParameter("introduce");
+        String phone = req.getParameter("phone");
+        String fileName = req.getParameter("fileName");
+        double latitude = Double.parseDouble(req.getParameter("latitude"));
+        double longitude = Double.parseDouble(req.getParameter("longitude"));
+        String urlPath = filePath + "suggest/" + fileName;
+
+        return repository.suggest(placeName, address, introduce, phone, urlPath, latitude, longitude);
     }
 }
 

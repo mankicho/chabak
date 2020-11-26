@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-
 @WebServlet(
         name = "FileUploadServlet",
         urlPatterns = {"/file/upload.do"},
@@ -26,23 +25,28 @@ import java.io.PrintWriter;
         maxRequestSize = 1024 * 1024 * 50
 )
 public class FileUploadService extends HttpServlet {
-    private final String filePath = "C:\\Users\\skxz1_000\\Desktop\\apache-tomcat-8.5.57\\webapps\\ROOT\\resources\\member\\";
+    private final String memberFilePath = "C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 8.5\\webapps\\ROOT\\resources\\member\\";
+    private final String suggestFilePath = "C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 8.5\\webapps\\ROOT\\resources\\suggest\\";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
         String memberId = request.getParameter("id");
         System.out.println("fileUpLoadService is called ==> " + memberId);
 
+        String fileSavePath = memberFilePath + memberId;
+        if(memberId.equals("suggest")){
+            fileSavePath = suggestFilePath;
+        }
+
         PrintWriter pw = resp.getWriter();
         try {
-            File memberDir = new File(filePath + memberId);
+            File memberDir = new File(fileSavePath);
             if (!memberDir.exists()) {
                 memberDir.mkdir();
             }
             Part part = request.getPart("image");
             String fileName = getFilename(part);
             System.out.println("upload = " + fileName);
-            String fileSavePath = filePath + memberId;
             if (!fileName.isEmpty()) {
                 // 파일을 저장할 서버상의 경로
                 part.write(fileSavePath + "\\" + fileName);
@@ -56,6 +60,8 @@ public class FileUploadService extends HttpServlet {
             pw.flush();
         }
     }
+
+
 
     private String getFilename(Part part) {
         String contentDisp = part.getHeader("content-disposition");
