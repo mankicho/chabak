@@ -68,4 +68,8 @@ public class Article {
         this.createTime = createTime;
     }
 
+    @Override
+    public String toString() {
+        return articleId+","+title + "," + content + "," + urlPath;
+    }
 }

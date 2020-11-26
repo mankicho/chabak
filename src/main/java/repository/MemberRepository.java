@@ -30,7 +30,7 @@ public class MemberRepository {
             String pw = CryptoUtil.encryptAES256(member.getPw(), member.getPw().hashCode() + "");
             String id = member.getId();
             String nickName = member.getNickName();
-            PreparedStatement pstmt = con.prepareStatement("insert into cb_member values (?,?,?)");
+            PreparedStatement pstmt = con.prepareStatement("insert into cb_member(memberId,nickName,password) values (?,?,?)");
             pstmt.setString(1, id);
             pstmt.setString(2, nickName);
             pstmt.setString(3, pw);
@@ -116,22 +116,24 @@ public class MemberRepository {
         List<Chabak> result = new ArrayList<>();
         try {
             String query = "SELECT c.*\" +\n" +
-                    "                    \"from cb_jjim_list as l,cb_chabak_location as c\" +\n" +
-                    "                    \"where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
+                    "                    \"from cb_jjim_list as l,cb_chabak_location as c " +
+                    " where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                String placeName = rs.getString(1);
-                String address = rs.getString(2);
-                String introduce = rs.getString(3);
-                String filePath = rs.getString(4);
-                int jjim = rs.getInt(5);
-                double latitude = rs.getDouble(6);
-                double longitude = rs.getDouble(7);
-                String phoneNumber = rs.getString(8);
+                int chabakId = rs.getInt(1);
+                String placeName = rs.getString(2);
+                String address = rs.getString(3);
+                String phoneNumber = rs.getString(4);
+                String introduce = rs.getString(5);
+                String filePath = rs.getString(6);
+                int jjim = rs.getInt(7);
+                double latitude = rs.getDouble(8);
+                double longitude = rs.getDouble(9);
 
-                result.add(new Chabak(placeName, address, introduce, filePath, jjim, latitude, longitude, phoneNumber));
+                result.add(new Chabak(chabakId
+                        , placeName, address, phoneNumber, introduce, filePath, jjim, latitude, longitude));
             }
 
             return result;

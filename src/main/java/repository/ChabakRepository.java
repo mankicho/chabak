@@ -5,14 +5,17 @@ import domain.Chabak;
 import domain.facility.Fishing;
 import domain.facility.Toilet;
 import domain.facility.Utility;
+import filter.Filter;
 import repository.facility.FishingRepository;
 import repository.facility.ToiletRepository;
 
+import javax.rmi.CORBA.Util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -40,23 +43,31 @@ public class ChabakRepository {
         try {
             con = DatabaseConnection.get();
 
-            String query = "select * from cb_chabak_location";
+            String query = "select * from cb_chabak_location as l inner join cb_chabak_location_filter as f on f.placeId = l.placeId;";
             PreparedStatement pstmt = con.prepareStatement(query);
 
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                String name = rs.getString(1);
-                String add = rs.getString(2);
-                String intro = rs.getString(3);
-                String fileP = rs.getString(4);
-                int jjim = rs.getInt(5);
-                double lat = rs.getDouble(6);
-                double lng = rs.getDouble(7);
-                String pNum = rs.getString(8);
-                chabaks.add(new Chabak(name, add, intro, fileP, jjim, lat, lng, pNum));
+                int id = rs.getInt(1);
+                String name = rs.getString(2);
+                String add = rs.getString(3);
+                String pNum = rs.getString(4);
+                String intro = rs.getString(5);
+                String fileP = rs.getString(6);
+                int jjim = rs.getInt(7);
+                double lat = rs.getDouble(8);
+                double lng = rs.getDouble(9);
+                if (lat < 30.0 || lng < 30.0) {
+                    continue;
+                }
+                Chabak chabak = new Chabak(id, name, add, pNum, intro, fileP, jjim, lat, lng);
+                boolean tBool = rs.getBoolean(10);
+                boolean fBool = rs.getBoolean(10);
+                chabak.setToiletFilter(tBool);
+                chabak.setFishingFilter(fBool);
+                chabaks.add(chabak);
             }
-
             chabaks.parallelStream().forEach(cha -> {
                 chabakWithUtility.putIfAbsent(cha, new ArrayList<>());
                 toilets.parallelStream().filter(to -> distance(cha.getLatitude(), cha.getLongitude(), to.getLat(),
@@ -93,7 +104,6 @@ public class ChabakRepository {
                         }).forEach(data -> cha.getUtils().add(data)); // 낚시터
             });
 
-            chabakWithUtility.entrySet().forEach(System.out::println);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,7 +114,6 @@ public class ChabakRepository {
     }
 
     public List<Chabak> searchByKeyword(String keyword) {
-        System.out.println(keyword);
         return chabaks.stream().filter(loc -> (loc.getAddress() + loc.getPlace_name()).contains(keyword))
                 .collect(Collectors.toList());
     }
@@ -119,6 +128,28 @@ public class ChabakRepository {
 
     public List<Chabak> getChabaks() {
         return this.chabaks;
+    }
+
+    public List<Chabak> getFilteredChabaks(List<Filter> filters) {
+        List<Chabak> result = new ArrayList<>();
+        chabakWithUtility.entrySet().stream().filter(data -> {
+            List<Utility> utils = data.getValue();
+            boolean isFiltered = false;
+
+            for (Utility utility : utils) {
+                for (Filter filter : filters) {
+                    if (filter.filter(utility)) {
+                        isFiltered = true;
+                        break;
+                    } else {
+                        isFiltered = false;
+                    }
+                }
+            }
+            return isFiltered;
+        }).forEach(data -> result.add(data.getKey()));
+
+        return result;
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -152,5 +183,27 @@ public class ChabakRepository {
 
     public Map<Chabak, List<Utility>> getChabakWithUtility() {
         return chabakWithUtility;
+    }
+
+    public boolean userEval(String memberId, int placeId, String placeName, double eval) {
+        String query = "call before_insert_into_user_evaluation(?,?,?,?,?)";
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+
+            pstmt.setString(1, memberId);
+            pstmt.setInt(2, placeId);
+            pstmt.setString(3, placeName);
+            pstmt.setDouble(4, eval);
+            pstmt.setDate(5, new Date(new java.util.Date().getTime()));
+            int row = pstmt.executeUpdate();
+
+            if (row > 0) {
+                return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
