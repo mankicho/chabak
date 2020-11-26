@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/chabak")
 public class ChabakService {
     private ChabakRepository repository;
-    private final String filePath = "/resources/member/";
 
     public ChabakService() {
         repository = new ChabakRepository();
@@ -97,7 +96,7 @@ public class ChabakService {
         String fileName = req.getParameter("fileName");
         double latitude = Double.parseDouble(req.getParameter("latitude"));
         double longitude = Double.parseDouble(req.getParameter("longitude"));
-        String urlPath = filePath + "suggest/" + fileName;
+        String urlPath = "/resources/suggest/" + fileName;
 
         return repository.suggest(placeName, address, introduce, phone, urlPath, latitude, longitude);
     }
