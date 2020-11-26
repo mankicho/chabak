@@ -61,17 +61,17 @@ public class MemberService {
     @RequestMapping(value = "/jjim.do")
     public String jjimDo(HttpServletRequest request) {
         String id = request.getParameter("id");
+        int placeId = Integer.parseInt(request.getParameter("placeId"));
         String placeName = request.getParameter("placeName");
 
-        System.out.println("id = " + id + ", placeName " + placeName);
-        return memberRepository.jjimDo(id, placeName);
+        return memberRepository.jjimDo(id, placeId, placeName);
     }
 
     @RequestMapping(value = "/jjim.undo")
     public String jjimUndo(HttpServletRequest request) {
-        String id = request.getParameter("id");
-        String placeName = request.getParameter("placeName");
+        String memberId = request.getParameter("id");
+        int placeId = Integer.parseInt(request.getParameter("placeId"));
 
-        return memberRepository.jjimUndo(id, placeName);
+        return memberRepository.jjimUndo(memberId, placeId);
     }
 }

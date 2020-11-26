@@ -4,6 +4,7 @@ import crypto.CryptoUtil;
 import database.DatabaseConnection;
 import domain.Chabak;
 import domain.member.Member;
+import org.apache.log4j.Logger;
 import util.ConsoleUtil;
 
 import java.sql.Connection;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberRepository {
-
     Connection con;
 
     public MemberRepository() {
@@ -81,32 +81,35 @@ public class MemberRepository {
         }
     }
 
-    public String jjimDo(String id, String placeName) {
-        String query = "INSERT INTO cb_jjim_list values (?,?)";
+    public String jjimDo(String memberId, int placeId, String placeName) {
+        String query = "INSERT INTO cb_jjim_list values (?,?,?)";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, id);
-            pstmt.setString(2, placeName);
+            pstmt.setString(1, memberId);
+            pstmt.setInt(2, placeId);
+            pstmt.setString(3, placeName);
 
             pstmt.execute();
-            return "true";
+            System.out.println("["+memberId+"]가 ["+placeId+"] 찜");
+            return "success";
         } catch (SQLException e) {
             e.printStackTrace();
             return "false";
         }
     }
 
-    public String jjimUndo(String id, String placeName) {
-        String query = "DELETE FROM cb_jjim_list where id = ? AND chabak_name = ?";
+    public String jjimUndo(String memberId, int placeId) {
+        String query = "DELETE FROM cb_jjim_list where memberId = ? AND placeId = ?";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setString(1, id);
-            pstmt.setString(2, placeName);
+            pstmt.setString(1, memberId);
+            pstmt.setInt(2, placeId);
 
             pstmt.execute();
-            return "true";
+            System.out.println("["+memberId+"]가 ["+placeId+"] 찜 취소");
+            return "success";
         } catch (SQLException e) {
             return "false";
         }
@@ -115,9 +118,7 @@ public class MemberRepository {
     public List<Chabak> getJJimList(String id) {
         List<Chabak> result = new ArrayList<>();
         try {
-            String query = "SELECT c.*\" +\n" +
-                    "                    \"from cb_jjim_list as l,cb_chabak_location as c " +
-                    " where id = ? AND cb_jjim_list.chabak_name = cb_chabak_location.placeName";
+            String query = "SELECT c.* from cb_jjim_list l, cb_chabak_location c where id = ? AND l.placeName = c.placeName";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
@@ -132,8 +133,7 @@ public class MemberRepository {
                 double latitude = rs.getDouble(8);
                 double longitude = rs.getDouble(9);
 
-                result.add(new Chabak(chabakId
-                        , placeName, address, phoneNumber, introduce, filePath, jjim, latitude, longitude));
+                result.add(new Chabak(chabakId, placeName, address, phoneNumber, introduce, filePath, jjim, latitude, longitude));
             }
 
             return result;
