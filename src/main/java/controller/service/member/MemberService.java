@@ -74,4 +74,15 @@ public class MemberService {
 
         return memberRepository.jjimUndo(memberId, placeId);
     }
+
+    @RequestMapping(value = "/getJJimAndEvaluated.do")
+    public String getJJimAndEvaluated(HttpServletRequest request) {
+        String memberId = request.getParameter("memberId");
+        int placeId = Integer.parseInt(request.getParameter("placeId"));
+
+        String isJJim = memberRepository.isJJim(memberId, placeId);
+        String isEvaluated = memberRepository.isEvaluated(memberId, placeId);
+
+        return isJJim + " " + isEvaluated;
+    }
 }
