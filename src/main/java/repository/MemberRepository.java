@@ -4,7 +4,6 @@ import crypto.CryptoUtil;
 import database.DatabaseConnection;
 import domain.Chabak;
 import domain.member.Member;
-import org.apache.log4j.Logger;
 import util.ConsoleUtil;
 
 import java.sql.Connection;
@@ -44,7 +43,7 @@ public class MemberRepository {
     }
 
     public String select(String id, String pw) {
-        String query = "select * from cb_member where memberId = ? AND password = ?";
+        String query = "SELECT * FROM cb_member WHERE memberId = ? AND password = ? AND isDeleted = 0";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -62,25 +61,100 @@ public class MemberRepository {
         }
     }
 
-    public String update(String id, String nickName, String password) {
-        try {
-            String pw = CryptoUtil.encryptAES256(password, password.hashCode() + "");
+    /**
+     * 닉네임 중복확인
+     */
+    public int nickDoubleCheck(String nickName) {
+        String query = "SELECT nickName FROM cb_member WHERE nickName = ?";
 
-            String query = "UPDATE cb_member SET nickname = ?, pw = ? WHERE userId = ?";
+        try {
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, nickName);
-            pstmt.setString(2, pw);
-            pstmt.setString(3, id);
+            ResultSet rs = pstmt.executeQuery();
 
-            pstmt.executeUpdate();
-
-            return "success";
+            if (rs.next()) {
+                return 0; // 중복된 닉네임 존재
+            }
+            return 1; // 중복된 닉네임 없음
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return "false";
+            e.printStackTrace();
+            return -1; // 에러
         }
     }
 
+    /**
+     * 이메일(아이디) 중복확인
+     */
+    public int idDoubleCheck(String memberId) {
+        String query = "SELECT memberId FROM cb_member WHERE memberId = ?";
+
+        try {
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, memberId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return 0; // 중복된 아이디 존재
+            }
+            return 1; // 중복된 아이디 없음
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1; // 에러
+        }
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    public int changePassword(String memberId, String password) {
+        try {
+            String encrypted = CryptoUtil.encryptAES256(password, password.hashCode() + "");
+
+            String query = "UPDATE cb_member SET password = ? WHERE memberId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, encrypted);
+            pstmt.setString(2, memberId);
+
+            return pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+    }
+
+    /**
+     * 닉네임 변경
+     */
+    public int changeNickname(String memberId, String nickName) {
+        try {
+            String query = "UPDATE cb_member SET nickname = ? WHERE memberId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, nickName);
+            pstmt.setString(2, memberId);
+
+            return pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+    }
+
+    public int withdraw(String memberId){
+        try {
+            String query = "UPDATE cb_member SET isDeleted = 1 WHERE memberId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, memberId);
+
+            return pstmt.executeUpdate();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return -1;
+        }
+    }
+
+    /**
+     * 차박지 찜
+     */
     public String jjimDo(String memberId, int placeId, String placeName) {
         String query = "INSERT INTO cb_jjim_list values (?,?,?)";
 
@@ -99,6 +173,9 @@ public class MemberRepository {
         }
     }
 
+    /**
+     * 차박지 찜 취소
+     */
     public String jjimUndo(String memberId, int placeId) {
         String query = "DELETE FROM cb_jjim_list where memberId = ? AND placeId = ?";
 
@@ -115,6 +192,9 @@ public class MemberRepository {
         }
     }
 
+    /**
+     * 사용자의 차박지 찜 리스트 가져오기
+     */
     public List<Chabak> getJJimList(String id) {
         List<Chabak> result = new ArrayList<>();
         try {
