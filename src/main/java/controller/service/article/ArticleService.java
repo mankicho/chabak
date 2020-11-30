@@ -1,6 +1,7 @@
 package controller.service.article;
 
 import domain.Article;
+import domain.Comment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import repository.ArticleRepository;
@@ -19,6 +20,9 @@ public class ArticleService {
     private final ArticleRepository articleRepository = new ArticleRepository();
     private final String filePath = "/resources/member/";
 
+    /**
+     * 게시글 리스트 읽기
+     */
     @RequestMapping(value = "/get.do")
     public List<Article> get(HttpServletRequest request) {
         System.out.println(getClass().getName()+" is called article");
@@ -29,6 +33,9 @@ public class ArticleService {
         return articleRepository.get(n);
     }
 
+    /**
+     * 게시글 하나에 대한 정보 읽기
+     */
     @RequestMapping(value = "/selectOne.do")
     public List<Article> select(HttpServletRequest request, HttpServletResponse response) {
         String articleId = request.getParameter("articleId");
@@ -37,22 +44,43 @@ public class ArticleService {
         return articleRepository.selectOneArticle(id);
     }
 
+    /**
+     * 게시글 작성
+     */
     @RequestMapping(value = "/insert.do")
     public String insertArticle(HttpServletRequest request, HttpServletResponse response) {
         String memberId = request.getParameter("id");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String isAttached = request.getParameter("isAttached"); // 사진보냈다 flag
-        String createTime = request.getParameter("createTime");
         String fileName = request.getParameter("fileName");
         System.out.println(fileName + " ==> is called");
-        System.out.println(memberId + "," + title + "," + content + "," + createTime);
+        System.out.println(memberId + "," + title + "," + content);
         String urlPath = "";
         if (!isAttached.equals("")) {
             urlPath = filePath + memberId + "/" + fileName;
         }
 
-        return articleRepository.insert(memberId, title, content, urlPath, createTime);
+        return articleRepository.insert(memberId, title, content, urlPath);
+    }
+
+    /**
+     * 댓글 리스트 읽기
+     */
+    @RequestMapping(value = "/getComments.do")
+    public List<Comment> getComments(HttpServletRequest request) {
+        return articleRepository.getComments(Integer.parseInt(request.getParameter("articleId")));
+    }
+
+    /**
+     * 댓글 쓰기
+     */
+    @RequestMapping(value = "/writeComment.do")
+    public int writeComment(HttpServletRequest request) {
+        int articleId = Integer.parseInt(request.getParameter("articleId"));
+        String memberId = request.getParameter("memberId");
+        String content = request.getParameter("content");
+        return articleRepository.writeComment(articleId, memberId, content);
     }
 
 

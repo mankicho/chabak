@@ -2,6 +2,7 @@ package repository;
 
 import database.DatabaseConnection;
 import domain.Article;
+import domain.Comment;
 import util.ConsoleUtil;
 import util.DateUtil;
 
@@ -30,16 +31,15 @@ public class ArticleRepository {
     }
 
 
-    public String insert(String memberId, String title, String content, String path, String createTime) {
+    public String insert(String memberId, String title, String content, String path) {
 
-        String query = "insert into cb_article (memberId,title,content,imagePath,createTime) values (?,?,?,?,?) ";
+        String query = "insert into cb_article (memberId,title,content,imagePath) values (?,?,?,?) ";
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, memberId);
             pstmt.setString(2, title);
             pstmt.setString(3, content);
             pstmt.setString(4, path);
-            pstmt.setString(5, createTime);
 
             pstmt.execute();
 
@@ -55,7 +55,7 @@ public class ArticleRepository {
         List<Article> result = new ArrayList<>();
 
         String query = "SELECT * FROM cb_article " +
-                "WHERE articleId < ? AND isDeleted = 1 ORDER BY articleId DESC LIMIT 10";
+                "WHERE articleId < ? AND isDeleted = 0 ORDER BY articleId DESC LIMIT 10";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -136,4 +136,52 @@ public class ArticleRepository {
 
     }
 
+    /**
+     * 댓글 리스트 읽기
+     */
+    public List<Comment> getComments(int articleId){
+        List<Comment> commentList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM comment_view WHERE articleId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+
+            pstmt.setInt(1, articleId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int commentId = rs.getInt(1);
+                int articleID = rs.getInt(2);
+                String memberId = rs.getString(3);
+                String nickName = rs.getString(4);
+                String content = rs.getString(5);
+                String createTime = rs.getString(6);
+
+                commentList.add(new Comment(commentId, articleID, memberId, nickName, content, createTime));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+        return commentList;
+    }
+
+    /**
+     * 댓글 쓰기
+     */
+    public int writeComment(int articleId, String memberId, String content){
+        try {
+            String query = "INSERT INTO article_comment (articleId, memberId, content) VALUES (?, ?, ?)";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, articleId);
+            pstmt.setString(2, memberId);
+            pstmt.setString(3, content);
+
+            return pstmt.executeUpdate(); // 1
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1; // 에러
+        }
+    }
 }
