@@ -4,6 +4,7 @@ import domain.facility.Utility;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Chabak {
@@ -95,5 +96,14 @@ public class Chabak {
 
     public void setFishingFilter(boolean fishingFilter) {
         this.fishingFilter = fishingFilter;
+    }
+
+    public boolean hasAddress(String[] strs) {
+        for (String str : strs) {
+            if (address.contains(str)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

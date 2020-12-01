@@ -7,6 +7,10 @@ public class Toilet extends Utility {
     private double lat;
     private double lng;
 
+    public Toilet() {
+
+    }
+
     public Toilet(int util, int id, String address, double lat, double lng) {
         this.util = util;
         this.id = id;

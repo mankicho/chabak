@@ -8,6 +8,9 @@ public class Fishing extends Utility {
     private double lat;
     private double lng;
 
+    public Fishing(){
+
+    }
     public Fishing(int util, String name, String type, String address, double lat, double lng) {
         this.util = util;
         this.name = name;
