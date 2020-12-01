@@ -6,6 +6,8 @@ import domain.facility.Fishing;
 import domain.facility.Toilet;
 import domain.facility.Utility;
 import filter.Filter;
+import filter.FishingFilter;
+import filter.ToiletFilter;
 import repository.facility.FishingRepository;
 import repository.facility.ToiletRepository;
 
@@ -101,14 +103,13 @@ public class ChabakRepository {
                             return true;
                         }).forEach(data -> cha.getUtils().add(data)); // 낚시터
             });
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public List<Chabak> searchByAddress(String query) {
-        return chabaks.stream().filter(loc -> loc.getAddress().contains(query)).collect(Collectors.toList());
+    public List<Chabak> searchByAddress(String[] query) {
+        return chabaks.stream().filter(data -> data.hasAddress(query)).collect(Collectors.toList());
     }
 
     public List<Chabak> searchByKeyword(String keyword) {
@@ -126,28 +127,6 @@ public class ChabakRepository {
 
     public List<Chabak> getChabaks() {
         return this.chabaks;
-    }
-
-    public List<Chabak> getFilteredChabaks(List<Filter> filters) {
-        List<Chabak> result = new ArrayList<>();
-        chabakWithUtility.entrySet().stream().filter(data -> {
-            List<Utility> utils = data.getValue();
-            boolean isFiltered = false;
-
-            for (Utility utility : utils) {
-                for (Filter filter : filters) {
-                    if (filter.filter(utility)) {
-                        isFiltered = true;
-                        break;
-                    } else {
-                        isFiltered = false;
-                    }
-                }
-            }
-            return isFiltered;
-        }).forEach(data -> result.add(data.getKey()));
-
-        return result;
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
@@ -206,6 +185,7 @@ public class ChabakRepository {
     }
 
 
+
     /**
      * 차박지 등록하기
      */
@@ -233,5 +213,32 @@ public class ChabakRepository {
             System.out.println("Fail to Suggest Chabakji");
             return "false";
         }
+
+    public List<Chabak> getFilteredList(String[] address, String[] flags) {
+        FishingFilter fishingFilter = new FishingFilter();
+        ToiletFilter toiletFilter = new ToiletFilter();
+        return chabaks.stream()
+                .filter(data -> {
+                    boolean isFiltered = false;
+                    List<Utility> utilities = data.getUtils();
+                    System.out.println(data + " : " + utilities);
+                    if (!data.hasAddress(address)) {
+                        return false;
+                    }
+
+                    if (flags[0].equals("T")) {
+                        if (!toiletFilter.filter(utilities)) {
+                            return false;
+                        }
+                    }
+
+                    if (flags[1].equals("T")) {
+                        if (!fishingFilter.filter(utilities)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                }).collect(Collectors.toList());
+
     }
 }

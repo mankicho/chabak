@@ -55,7 +55,8 @@ public class ChabakService {
     @RequestMapping(value = "/getAds.do")
     public List<Chabak> searchByAddress(HttpServletRequest request, HttpServletResponse response) {
         String address = request.getParameter("address");
-        return repository.searchByAddress(address);
+        String[] adds = address.split("/");
+        return repository.searchByAddress(adds);
     }
 
     @RequestMapping(value = "/eval.do")
@@ -68,20 +69,13 @@ public class ChabakService {
     }
 
     @RequestMapping(value = "/filter.do")
-    public List<Chabak> filter(HttpServletRequest request) {
-        String para = request.getParameter("para");
-
-        String[] split = para.split("s");
-
-        List<Filter> filters = new ArrayList<>();
-        if (split[0].equals("T")) {
-            filters.add(new ToiletFilter());
-        }
-        if (split[1].equals("T")) {
-            filters.add(new FishingFilter());
-        }
-
-        return repository.getFilteredChabaks(filters);
+    public List<Chabak> getFilteredList(HttpServletRequest request) {
+        String flags = request.getParameter("flags");
+        String address = request.getParameter("add");
+        String[] addresses = address.split("/");
+        String[] split = flags.split("/");
+        System.out.println(Arrays.toString(split)+"ASD");
+        return repository.getFilteredList(addresses,split);
     }
 
     /**
