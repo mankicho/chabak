@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String MAIN_USER_ID = "chabak";
+    private static final String MAIN_USER_ID = "dky";
     private static final String SUB_USER_ID = "jongseol";
     private static final String PASSWORD = "1234";
 
@@ -21,7 +21,7 @@ public class DatabaseConnection {
 
     public static Connection get() throws SQLException {
         if (connection == null) {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/chabak?serverTimezone=Asia/Seoul", MAIN_USER_ID, PASSWORD);
+            connection = DriverManager.getConnection("jdbc:mysql://211.222.234.14:3306/chabak?serverTimezone=Asia/Seoul", MAIN_USER_ID, PASSWORD);
             System.out.println("connection is completed");
         }
         return connection;
