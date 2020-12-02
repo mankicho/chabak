@@ -3,6 +3,7 @@ package repository;
 import crypto.CryptoUtil;
 import database.DatabaseConnection;
 import domain.Chabak;
+import domain.Review;
 import domain.member.Member;
 import util.ConsoleUtil;
 
@@ -266,6 +267,33 @@ public class MemberRepository {
         } catch (SQLException e) {
             e.printStackTrace();
             return "Error";
+        }
+    }
+
+    /**
+     * 사용자가 작성한 리뷰 가져오기
+     */
+    public List<Review> getUsersReview(String memberId) {
+        List<Review> reviewList = new ArrayList<>();
+        try {
+            String query = " SELECT placeId, nickName, review_content, evaluation_point, eval_time FROM user_evaluation WHERE memberId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, memberId);
+
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int placeID = rs.getInt(1);
+                String nickName = rs.getString(2);
+                String review_content = rs.getString(3);
+                double evaluation_point = rs.getDouble(4);
+                String eval_time = rs.getString(5);
+
+                reviewList.add(new Review(placeID, nickName, review_content, evaluation_point, eval_time));
+            }
+            return reviewList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
         }
     }
 }

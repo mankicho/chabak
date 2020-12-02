@@ -1,7 +1,9 @@
 package repository;
 
 import database.DatabaseConnection;
+import domain.Article;
 import domain.Chabak;
+import domain.Review;
 import domain.facility.Fishing;
 import domain.facility.Toilet;
 import domain.facility.Utility;
@@ -162,8 +164,12 @@ public class ChabakRepository {
         return chabakWithUtility;
     }
 
-    public boolean userEval(String memberId, int placeId, String placeName, double eval) {
-        String query = "call before_insert_into_user_evaluation(?,?,?,?,?)";
+    /**
+     * 차박지 평가 및 리뷰 작성
+     */
+    public int userEval(String memberId, int placeId, String placeName, double eval, String review) {
+        String query = "INSERT INTO user_evaluation (memberId,placeId,placeName,evaluation_point,review_content)" +
+                " VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE evaluation_point = ?, review_content = ?";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -172,19 +178,16 @@ public class ChabakRepository {
             pstmt.setInt(2, placeId);
             pstmt.setString(3, placeName);
             pstmt.setDouble(4, eval);
-            pstmt.setDate(5, new Date(new java.util.Date().getTime()));
-            int row = pstmt.executeUpdate();
+            pstmt.setString(5, review);
+            pstmt.setDouble(6, eval);
+            pstmt.setString(7, review);
 
-            if (row > 0) {
-                return true;
-            }
+            return pstmt.executeUpdate(); // 성공
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return -1; // 실패
     }
-
-
 
     /**
      * 차박지 등록하기
@@ -213,6 +216,7 @@ public class ChabakRepository {
             System.out.println("Fail to Suggest Chabakji");
             return "false";
         }
+    }
 
     public List<Chabak> getFilteredList(String[] address, String[] flags) {
         FishingFilter fishingFilter = new FishingFilter();
@@ -240,5 +244,30 @@ public class ChabakRepository {
                     return true;
                 }).collect(Collectors.toList());
 
+    }
+
+    /**
+     * 차박지별 등록된 리뷰 읽기
+     */
+    public List<Review> getReviews(int placeId){
+        List<Review> reviewList = new ArrayList<>();
+        try {
+            String query = "SELECT placeId, nickName, review_content, evaluation_point, eval_time FROM review_view WHERE placeId = ?";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, placeId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int placeID = rs.getInt(1);
+                String nickName = rs.getString(2);
+                String review_content = rs.getString(3);
+                double evaluation_point = rs.getDouble(4);
+                String eval_time = rs.getString(5);
+
+                reviewList.add(new Review(placeID, nickName, review_content, evaluation_point, eval_time));
+            }
+            return reviewList;
+        } catch (SQLException e) {
+            return new ArrayList<>();
+        }
     }
 }

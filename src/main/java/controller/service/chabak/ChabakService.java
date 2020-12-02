@@ -1,6 +1,7 @@
 package controller.service.chabak;
 
 import domain.Chabak;
+import domain.Review;
 import domain.facility.Utility;
 import filter.Filter;
 import filter.FishingFilter;
@@ -60,12 +61,13 @@ public class ChabakService {
     }
 
     @RequestMapping(value = "/eval.do")
-    public boolean userEval(HttpServletRequest request) {
+    public int userEval(HttpServletRequest request) {
         String memberId = request.getParameter("mId");
         int placeId = Integer.parseInt(request.getParameter("pId"));
         String placeName = request.getParameter("pName");
         double eval = Double.parseDouble(request.getParameter("eval"));
-        return repository.userEval(memberId, placeId, placeName, eval);
+        String review = request.getParameter("review");
+        return repository.userEval(memberId, placeId, placeName, eval, review);
     }
 
     @RequestMapping(value = "/filter.do")
@@ -93,6 +95,14 @@ public class ChabakService {
         String urlPath = "/resources/suggest/" + fileName;
 
         return repository.suggest(placeName, address, introduce, phone, urlPath, latitude, longitude);
+    }
+
+    /**
+     * 차박지별 등록된 리뷰 읽기
+     */
+    @RequestMapping(value = "/getReviews.do")
+    public List<Review> getReviews(HttpServletRequest request){
+        return repository.getReviews(Integer.parseInt(request.getParameter("placeId")));
     }
 }
 
