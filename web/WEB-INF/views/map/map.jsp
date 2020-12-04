@@ -15,8 +15,6 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=28c7a8a13fd45258a42b15ec36bd466f"></script>
 <script>
 var nameTemp = "";
-var pointsTemp = [];
-var polygonTemp;
 
 function BestAndCount(cityProvince, bestPlaceName, bestPlaceImage, count, numOfJJIM) {
     this.cityProvince = cityProvince;
@@ -151,8 +149,6 @@ kakao.maps.event.addListener(polygon, 'click', function() {
 	    });
 
 	nameTemp = name;
-	pointsTemp = points;
-	polygonTemp = polygon;
 
     // 커스텀 오버레이에 그릴 내용
     var content = '<div class="overlaybox">' +
@@ -167,10 +163,7 @@ kakao.maps.event.addListener(polygon, 'click', function() {
         '    <ul>' +
         '        <li class="up">' +
         '            <span class="number">총 ' + count + '개의 차박지</span>' +
-        '            <input type="button" value="클릭" onclick="zoomAndDetail()"/>' +
-<%--
-        '            <input type="button" value="클릭" onclick="zoomAndDetail(' + 'nameTemp' + ')"/>' +
---%>
+        '            <input type="button" value="클릭" onclick="searchInAndroid()"/>' +
         '        </li>' +
         '    </ul>' +
         '</div>';
@@ -180,9 +173,7 @@ kakao.maps.event.addListener(polygon, 'click', function() {
     customOverlay.setPosition(centroid(points));
     customOverlay.setMap(map);
 
-    map.setLevel(10, {anchor: centroid(points), animate: {
-        duration: 350
-    }});
+    setBounds(points);
 });
 // 폴리곤 클릭 리스너 끝
 
@@ -214,16 +205,43 @@ kakao.maps.event.addListener(polygon, 'click', function() {
     function closeOverlay() {
         customOverlay.setMap(null);
     }
+
+    // 지도 범위 재설정
+    function setBounds(points) {
+        // 지도를 재설정할 범위정보를 가지고 있을 LatLngBounds 객체를 생성합니다
+        var bounds = new kakao.maps.LatLngBounds();
+
+        for (var i = 0; i < points.length; i++) {
+            // LatLngBounds 객체에 좌표를 추가합니다
+            bounds.extend(new kakao.maps.LatLng(points[i].x, points[i].y));
+        }
+        map.setBounds(bounds);
+    }
 }
     // 다각형 그리는 함수 끝
-function zoomAndDetail() {
-   console.log(nameTemp);
-   console.log(pointsTemp);
-   console.log(polygonTemp);
 
-    console.log(centroid(pointsTemp));
+// centroid 알고리즘 (폴리곤 중심좌표)
+function centroid(points){
+    var i, j, len, p1, p2, f, area, x, y;
+    area = x = y = 0;
+    for(i = 0, len = points.length, j = len-1; i<len; j = i++){
+        p1 = points[i];
+        p2 = points[j];
+
+        f = p1.y * p2.x - p2.y * p1.x;
+        x += (p1.x + p2.x) * f;
+        y += (p1.y + p2.y) * f;
+        area += f * 3;
+    }
+    return new kakao.maps.LatLng(x/area, y/area);
 }
 
+function searchInAndroid() {
+    console.log(nameTemp);
+    var temp = 'app://_' + encodeURI(nameTemp, "UTF-8");
+    console.log(temp);
+    window.location.href = temp;
+}
 </script>
 </body>
 </html>
