@@ -2,6 +2,7 @@ package repository;
 
 import database.DatabaseConnection;
 import domain.Article;
+import domain.BestAndCount;
 import domain.Chabak;
 import domain.Review;
 import domain.facility.Fishing;
@@ -268,6 +269,27 @@ public class ChabakRepository {
             return reviewList;
         } catch (SQLException e) {
             return new ArrayList<>();
+        }
+    }
+
+    public Map<String, BestAndCount> getBestAndCount(){
+        Map<String, BestAndCount> map = new HashMap<>();
+        try {
+            String query = "SELECT * FROM cityProvince_bestAndCount";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                String cityProvince = rs.getString(1);
+                String bestPlaceName = rs.getString(2);
+                String bestPlaceImage = rs.getString(3);
+                int count = rs.getInt(4);
+                int numOfJJIM = rs.getInt(5);
+
+                map.put(cityProvince, new BestAndCount(cityProvince,bestPlaceName,bestPlaceImage,count,numOfJJIM));
+            }
+            return map;
+        } catch (SQLException e) {
+            return new HashMap<>();
         }
     }
 }
