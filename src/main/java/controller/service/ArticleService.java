@@ -1,4 +1,4 @@
-package controller.service.article;
+package controller.service;
 
 import domain.Article;
 import domain.Comment;
@@ -83,5 +83,12 @@ public class ArticleService {
         return articleRepository.writeComment(articleId, memberId, content);
     }
 
+    /**
+     * 사용자별 작성한 게시글 읽기
+     */
+    @RequestMapping(value = "/getArticles.do")
+    public List<Article> getArticles(HttpServletRequest request){
+        return articleRepository.getArticles(request.getParameter("memberId"));
+    }
 
 }

@@ -1,6 +1,7 @@
-package controller.service.member;
+package controller.service;
 
 import domain.Chabak;
+import domain.Review;
 import domain.member.Member;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -145,5 +146,15 @@ public class MemberService {
         String isEvaluated = memberRepository.isEvaluated(memberId, placeId);
 
         return isJJim + " " + isEvaluated;
+    }
+
+    /**
+     * 사용자가 작성한 리뷰 가져오기
+     */
+    @RequestMapping(value = "/getUsersReview.do")
+    public List<Review> getUsersReview(HttpServletRequest request) {
+        String memberId = request.getParameter("memberId");
+
+        return memberRepository.getUsersReview(memberId);
     }
 }

@@ -4,19 +4,13 @@ import database.DatabaseConnection;
 import domain.Article;
 import domain.Comment;
 import util.ConsoleUtil;
-import util.DateUtil;
 
-import javax.servlet.http.Part;
-import java.awt.*;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Stack;
 
 public class ArticleRepository {
 
@@ -182,6 +176,32 @@ public class ArticleRepository {
         } catch (SQLException e) {
             e.printStackTrace();
             return -1; // 에러
+        }
+    }
+
+    /**
+     * 사용자별 작성한 게시글 읽기
+     */
+    public List<Article> getArticles(String memberId){
+        List<Article> articleList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM cb_article WHERE memberId = ? AND isDeleted = 0";
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, memberId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int articleId = rs.getInt(1);
+                String memberID = rs.getString(2);
+                String title = rs.getString(3);
+                String content = rs.getString(4);
+                String imagePath = rs.getString(5);
+                String createTime = rs.getString(6);
+
+                articleList.add(new Article(articleId, memberID, title, content, imagePath, createTime));
+            }
+            return articleList;
+        } catch (SQLException e) {
+            return new ArrayList<>();
         }
     }
 }
