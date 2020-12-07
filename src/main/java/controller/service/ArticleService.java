@@ -1,4 +1,4 @@
-package controller.service.article;
+package controller.service;
 
 import domain.Article;
 import domain.Comment;

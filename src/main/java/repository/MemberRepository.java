@@ -12,7 +12,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MemberRepository {
     Connection con;
@@ -25,6 +27,9 @@ public class MemberRepository {
         }
     }
 
+    /**
+     * 회원가입
+     */
     public String insert(Member member) {
         try {
             String pw = CryptoUtil.encryptAES256(member.getPw(), member.getPw().hashCode() + "");
@@ -43,6 +48,9 @@ public class MemberRepository {
 
     }
 
+    /**
+     * 로그인
+     */
     public String select(String id, String pw) {
         String query = "SELECT * FROM cb_member WHERE memberId = ? AND password = ? AND isDeleted = 0";
 
@@ -140,6 +148,9 @@ public class MemberRepository {
         }
     }
 
+    /**
+     * 회원 탈퇴
+     */
     public int withdraw(String memberId){
         try {
             String query = "UPDATE cb_member SET isDeleted = 1 WHERE memberId = ?";
@@ -197,27 +208,33 @@ public class MemberRepository {
      * 사용자의 차박지 찜 리스트 가져오기
      */
     public List<Chabak> getJJimList(String id) {
-        List<Chabak> result = new ArrayList<>();
+        List<Chabak> chabakList = new ArrayList<>();
         try {
-            String query = "SELECT c.* from cb_jjim_list l, cb_chabak_location c where memberId = ? AND l.placeId = c.placeId";
+            String query = "SELECT c.* from cb_jjim_list l, chabak_info_view c where memberId = ? AND l.placeId = c.placeId";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, id);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                int chabakId = rs.getInt(1);
-                String placeName = rs.getString(2);
-                String address = rs.getString(3);
-                String phoneNumber = rs.getString(4);
-                String introduce = rs.getString(5);
-                String filePath = rs.getString(6);
-                int jjim = rs.getInt(7);
-                double latitude = rs.getDouble(8);
-                double longitude = rs.getDouble(9);
+                int placeId = rs.getInt(1);
+                int toiletCount = rs.getInt(2);
+                int fishingCount = rs.getInt(3);
+                String placeName = rs.getString(4);
+                String address = rs.getString(5);
+                String phone_number = rs.getString(6);
+                String introduce = rs.getString(7);
+                String filePath = rs.getString(8);
+                int jjim = rs.getInt(9);
+                double avg_point = rs.getDouble(10);
+                double latitude = rs.getDouble(11);
+                double longitude = rs.getDouble(12);
 
-                result.add(new Chabak(chabakId, placeName, address, phoneNumber, introduce, filePath, jjim, latitude, longitude));
+                Map<String, Integer> map = new HashMap<>();
+                map.put("toilet", toiletCount);
+                map.put("fishing", fishingCount);
+                chabakList.add(new Chabak(placeId, placeName, address, phone_number, introduce,
+                        filePath, jjim, latitude, longitude, avg_point, map));
             }
-
-            return result;
+            return chabakList;
         } catch (SQLException e) {
             e.printStackTrace();
             return new ArrayList<>();

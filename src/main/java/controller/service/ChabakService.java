@@ -1,22 +1,15 @@
-package controller.service.chabak;
+package controller.service;
 
 import domain.Chabak;
 import domain.Review;
-import domain.facility.Utility;
-import filter.Filter;
-import filter.FishingFilter;
-import filter.ToiletFilter;
+import domain.facility.Fishing;
+import domain.facility.Toilet;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import repository.ChabakRepository;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/chabak")
@@ -27,39 +20,35 @@ public class ChabakService {
         repository = new ChabakRepository();
     }
 
+    /**
+     * 모든 차박지 리스트
+     */
     @RequestMapping(value = "/get.do")
-    public List<Chabak> getChabakTenAtATime(HttpServletRequest request) {
-        String num = request.getParameter("num");
-        String address = request.getParameter("add");
-        String fish = request.getParameter("fish");
-        String toilet = request.getParameter("toilet");
-
-        if (num == null) {
-            return repository.getChabaks();
-        }
-        int n;
-        try {
-            n = Integer.parseInt(num);
-        } catch (NumberFormatException e) {
-            n = 0;
-        }
-        // 2초 정도 걸리는작업이라고 가정.
-        return repository.getChabaks(n);
+    public List<Chabak> getAllChabakList() {
+        return repository.getAllChabakList();
     }
 
-    @RequestMapping(value = "/getKey.do")
-    public List<Chabak> searchByKeyword(HttpServletRequest request, HttpServletResponse response) {
-        String key = request.getParameter("key");
-        return repository.searchByKeyword(key);
+    /**
+     * 차박지별 화장실 정보
+     */
+    @RequestMapping(value = "/getToilets.do")
+    public List<Toilet> getToilets(HttpServletRequest request){
+        int placeId = Integer.parseInt(request.getParameter("placeId"));
+        return repository.getToilets(placeId);
     }
 
-    @RequestMapping(value = "/getAds.do")
-    public List<Chabak> searchByAddress(HttpServletRequest request, HttpServletResponse response) {
-        String address = request.getParameter("address");
-        String[] adds = address.split("/");
-        return repository.searchByAddress(adds);
+    /**
+     * 차박지별 낚시터 정보
+     */
+    @RequestMapping(value = "/getFishings.do")
+    public List<Fishing> getFishings(HttpServletRequest request){
+        int placeId = Integer.parseInt(request.getParameter("placeId"));
+        return repository.getFishings(placeId);
     }
 
+    /**
+     * 차박지 평가
+     */
     @RequestMapping(value = "/eval.do")
     public int userEval(HttpServletRequest request) {
         String memberId = request.getParameter("mId");
@@ -70,6 +59,9 @@ public class ChabakService {
         return repository.userEval(memberId, placeId, placeName, eval, review);
     }
 
+    /**
+     * 차박지 검색
+     */
     @RequestMapping(value = "/filter.do")
     public List<Chabak> getFilteredList(HttpServletRequest request) {
         String flags = request.getParameter("flags");
@@ -78,6 +70,15 @@ public class ChabakService {
         String[] split = flags.split("/");
         System.out.println(Arrays.toString(split)+"ASD");
         return repository.getFilteredList(addresses,split);
+    }
+
+    /**
+     * 광역시, 도별 차박지 리스트
+     */
+    @RequestMapping(value = "/getProvinceChabakList.do")
+    public List<Chabak> getProvinceChabakList(HttpServletRequest request) {
+        String province = request.getParameter("province");
+        return repository.getProvinceChabakList(province);
     }
 
     /**

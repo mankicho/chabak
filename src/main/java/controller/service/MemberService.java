@@ -1,4 +1,4 @@
-package controller.service.member;
+package controller.service;
 
 import domain.Chabak;
 import domain.Review;

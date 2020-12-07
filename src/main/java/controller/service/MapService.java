@@ -1,19 +1,13 @@
-package controller.service.map;
+package controller.service;
 
-import database.DatabaseConnection;
 import domain.BestAndCount;
+import domain.Chabak;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import repository.ArticleRepository;
 import repository.ChabakRepository;
-import util.ConsoleUtil;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 

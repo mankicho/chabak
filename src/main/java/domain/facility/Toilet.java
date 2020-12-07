@@ -1,46 +1,23 @@
 package domain.facility;
 
-public class Toilet extends Utility {
-    private int util;
-    private int id;
+public class Toilet {
+    private int toiletId;
     private String address;
-    private double lat;
-    private double lng;
+    private String open_time;
+    private double latitude;
+    private double longitude;
 
-    public Toilet() {
-
-    }
-
-    public Toilet(int util, int id, String address, double lat, double lng) {
-        this.util = util;
-        this.id = id;
+    public Toilet(int toiletId, String address, String open_time, double latitude, double longitude) {
+        this.toiletId = toiletId;
         this.address = address;
-        this.lat = lat;
-        this.lng = lng;
+        this.open_time = open_time;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
-    public int getUtil() {
-        return util;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public double getLat() {
-        return lat;
-    }
-
-    public double getLng() {
-        return lng;
-    }
-
-    @Override
-    public String toString() {
-        return "toilet : " + this.id + " " + this.address;
-    }
+    public int getToiletId() { return toiletId; }
+    public String getAddress() { return address; }
+    public String getOpen_time() { return open_time; }
+    public double getLatitude() { return latitude; }
+    public double getLongitude() { return longitude; }
 }

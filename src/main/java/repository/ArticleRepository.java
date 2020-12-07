@@ -4,19 +4,13 @@ import database.DatabaseConnection;
 import domain.Article;
 import domain.Comment;
 import util.ConsoleUtil;
-import util.DateUtil;
 
-import javax.servlet.http.Part;
-import java.awt.*;
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Stack;
 
 public class ArticleRepository {
 
