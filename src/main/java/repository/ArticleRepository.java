@@ -24,46 +24,86 @@ public class ArticleRepository {
         }
     }
 
-
-    public String insert(String memberId, String title, String content, String path) {
-
-        String query = "insert into cb_article (memberId,title,content,imagePath) values (?,?,?,?) ";
+    /**
+     * 게시글 작성
+     */
+    public int writeArticle(String memberId, String title, String content, String path) {
         try {
+            String query = "insert into cb_article (memberId,title,content,imagePath) values (?,?,?,?) ";
+
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, memberId);
             pstmt.setString(2, title);
             pstmt.setString(3, content);
             pstmt.setString(4, path);
 
-            pstmt.execute();
-
-            return "success";
+            return pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("하 에러처리...");
-            return "false";
+            return -1;
         }
     }
 
+    /**
+     * 게시글 수정
+     * */
+    public int updateArticle(int articleId, String title, String content, String path) {
+        try {
+            String query = "UPDATE cb_article SET title = ?, content = ?, imagePath = ? WHERE articleId = ?";
+
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setString(1, title);
+            pstmt.setString(2, content);
+            pstmt.setString(3, path);
+            pstmt.setInt(4, articleId);
+
+            return pstmt.executeUpdate(); // 성공시 변경된 행 수 리턴
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    /**
+     * 게시글 삭제
+     * */
+    public int deleteArticle(int articleId) {
+        try {
+            String query = "UPDATE cb_article SET isDeleted = 1 WHERE articleId = ?";
+
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, articleId);
+
+            return pstmt.executeUpdate(); // 성공시 변경된 행 수 리턴
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    /**
+     * 게시글 리스트 읽어오기
+     */
     public List<Article> get(int num) {
         List<Article> result = new ArrayList<>();
 
-        String query = "SELECT * FROM cb_article " +
-                "WHERE articleId < ? AND isDeleted = 0 ORDER BY articleId DESC LIMIT 10";
+        String query = "SELECT * FROM article_view " +
+                "WHERE articleId < ? ORDER BY articleId DESC LIMIT 100";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setInt(1, getNext() - ((num - 1) * 10));
+            pstmt.setInt(1, getNext() - ((num - 1) * 100));
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int articleId = rs.getInt(1);
                 String memberId = rs.getString(2);
-                String title = rs.getString(3);
-                String content = rs.getString(4);
-                String imagePath = rs.getString(5);
-                String createTime = rs.getString(6);
+                String nickName = rs.getString(3);
+                String title = rs.getString(4);
+                String content = rs.getString(5);
+                String imagePath = rs.getString(6);
+                String createTime = rs.getString(7);
 
-                result.add(new Article(articleId, memberId, title, content, imagePath, createTime));
+                result.add(new Article(articleId, memberId, nickName, title, content, imagePath, createTime));
             }
 
             System.out.println("result => " + result);
@@ -73,6 +113,9 @@ public class ArticleRepository {
         }
     }
 
+    /**
+     * 페이징처리 위해 가장 마지막 articleId 가져오기
+     */
     public int getNext() {
         String SQL = "SELECT articleId FROM cb_article ORDER BY articleId DESC";
         try {
@@ -92,10 +135,13 @@ public class ArticleRepository {
         return -1;
     }
 
-    public List<Article> selectOneArticle(int articleId) {
+    /**
+     * 게시글 하나 읽기
+     */
+    public List<Article> getArticle(int articleId) {
         List<Article> list = new ArrayList<>();
         try {
-            String query = "SELECT * FROM cb_article WHERE articleId = ?";
+            String query = "SELECT * FROM article_view WHERE articleId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
 
             pstmt.setInt(1, articleId);
@@ -105,12 +151,13 @@ public class ArticleRepository {
             if (rs.next()) {
                 int artId = rs.getInt(1);
                 String id = rs.getString(2);
-                String title = rs.getString(3);
-                String content = rs.getString(4);
-                String path = rs.getString(5);
-                String cTime = rs.getString(6);
+                String nickName = rs.getString(3);
+                String title = rs.getString(4);
+                String content = rs.getString(5);
+                String path = rs.getString(6);
+                String cTime = rs.getString(7);
 
-                list.add(new Article(artId, id, title, content, path, cTime));
+                list.add(new Article(artId, id, nickName, title, content, path, cTime));
             }
         } catch (SQLException e) {
             System.out.println("잘못된 요청입니다.");
@@ -119,15 +166,6 @@ public class ArticleRepository {
         }
 
         return list;
-    }
-
-    public void update() {
-
-    }
-
-    public void delete(Article article) {
-        String query = "delete from cb_article where memberId = ? AND createTime = ?";
-
     }
 
     /**
@@ -185,19 +223,20 @@ public class ArticleRepository {
     public List<Article> getArticles(String memberId){
         List<Article> articleList = new ArrayList<>();
         try {
-            String query = "SELECT * FROM cb_article WHERE memberId = ? AND isDeleted = 0";
+            String query = "SELECT * FROM article_view WHERE memberId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, memberId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int articleId = rs.getInt(1);
                 String memberID = rs.getString(2);
-                String title = rs.getString(3);
-                String content = rs.getString(4);
-                String imagePath = rs.getString(5);
-                String createTime = rs.getString(6);
+                String nickName = rs.getString(3);
+                String title = rs.getString(4);
+                String content = rs.getString(5);
+                String imagePath = rs.getString(6);
+                String createTime = rs.getString(7);
 
-                articleList.add(new Article(articleId, memberID, title, content, imagePath, createTime));
+                articleList.add(new Article(articleId, memberID, nickName, title, content, imagePath, createTime));
             }
             return articleList;
         } catch (SQLException e) {

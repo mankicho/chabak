@@ -21,7 +21,7 @@ public class DatabaseConnection {
 
     public static Connection get() throws SQLException {
         if (connection == null) {
-            connection = DriverManager.getConnection("jdbc:mysql://211.222.234.14:3306/chabak?serverTimezone=Asia/Seoul", MAIN_USER_ID, PASSWORD);
+            connection = DriverManager.getConnection("jdbc:mysql://59.17.26.162:3306/chabak?serverTimezone=Asia/Seoul&useServerPrepStmts=true", MAIN_USER_ID, PASSWORD);
             System.out.println("connection is completed");
         }
         return connection;
