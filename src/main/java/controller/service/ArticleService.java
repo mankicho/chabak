@@ -18,7 +18,7 @@ import java.util.Random;
 public class ArticleService {
 
     private final ArticleRepository articleRepository = new ArticleRepository();
-    private final String filePath = "/resources/member/";
+    private final String filePath = "/resources/article/";
 
     /**
      * 게시글 리스트 읽기
@@ -36,32 +36,53 @@ public class ArticleService {
     /**
      * 게시글 하나에 대한 정보 읽기
      */
-    @RequestMapping(value = "/selectOne.do")
-    public List<Article> select(HttpServletRequest request, HttpServletResponse response) {
-        String articleId = request.getParameter("articleId");
-        int id = Integer.parseInt(articleId);
-
-        return articleRepository.selectOneArticle(id);
+    @RequestMapping(value = "/getArticle.do")
+    public List<Article> getArticle(HttpServletRequest request) {
+        return articleRepository.getArticle(Integer.parseInt(request.getParameter("articleId")));
     }
 
     /**
      * 게시글 작성
      */
-    @RequestMapping(value = "/insert.do")
-    public String insertArticle(HttpServletRequest request, HttpServletResponse response) {
-        String memberId = request.getParameter("id");
+    @RequestMapping(value = "/writeArticle.do")
+    public int writeArticle(HttpServletRequest request) {
+        String memberId = request.getParameter("memberId");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
-        String isAttached = request.getParameter("isAttached"); // 사진보냈다 flag
         String fileName = request.getParameter("fileName");
         System.out.println(fileName + " ==> is called");
         System.out.println(memberId + "," + title + "," + content);
         String urlPath = "";
-        if (!isAttached.equals("")) {
-            urlPath = filePath + memberId + "/" + fileName;
+        if (!fileName.equals("")) {
+            urlPath = filePath + fileName;
         }
 
-        return articleRepository.insert(memberId, title, content, urlPath);
+        return articleRepository.writeArticle(memberId, title, content, urlPath);
+    }
+
+    /**
+     * 게시글 수정
+     */
+    @RequestMapping(value = "/updateArticle.do")
+    public int updateArticle(HttpServletRequest request) {
+        int articleId = Integer.parseInt(request.getParameter("articleId"));
+        String title = request.getParameter("title");
+        String content = request.getParameter("content");
+        String fileName = request.getParameter("fileName");
+        String urlPath = "";
+        if (!fileName.equals("")) {
+            urlPath = filePath + fileName;
+        }
+
+        return articleRepository.updateArticle(articleId, title, content, urlPath);
+    }
+
+    /**
+     * 게시글 삭제
+     */
+    @RequestMapping(value = "/deleteArticle.do")
+    public int deleteArticle(HttpServletRequest request) {
+        return articleRepository.deleteArticle(Integer.parseInt(request.getParameter("articleId")));
     }
 
     /**
