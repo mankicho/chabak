@@ -153,18 +153,19 @@ public class ChabakRepository {
     public List<Review> getReviews(int placeId){
         List<Review> reviewList = new ArrayList<>();
         try {
-            String query = "SELECT placeId, nickName, review_content, evaluation_point, eval_time FROM review_view WHERE placeId = ?";
+            String query = "SELECT * FROM review_view WHERE placeId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setInt(1, placeId);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int placeID = rs.getInt(1);
-                String nickName = rs.getString(2);
-                String review_content = rs.getString(3);
-                double evaluation_point = rs.getDouble(4);
-                String eval_time = rs.getString(5);
+                String memberID = rs.getString(2);
+                String nickName = rs.getString(3);
+                String review_content = rs.getString(4);
+                double evaluation_point = rs.getDouble(5);
+                String eval_time = rs.getString(6);
 
-                reviewList.add(new Review(placeID, nickName, review_content, evaluation_point, eval_time));
+                reviewList.add(new Review(placeID, memberID, nickName, review_content, evaluation_point, eval_time));
             }
             return reviewList;
         } catch (SQLException e) {
@@ -233,13 +234,86 @@ public class ChabakRepository {
     }
 
     /**
+     * 하나의 차박지 정보
+     */
+    public List<Chabak> getOne(int placeId){
+        List<Chabak> chabakList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM chabak_info_view WHERE placeId = ?";
+
+            PreparedStatement pstmt = con.prepareStatement(query);
+            pstmt.setInt(1, placeId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                int placeID = rs.getInt(1);
+                int toiletCount = rs.getInt(2);
+                int fishingCount = rs.getInt(3);
+                String placeName = rs.getString(4);
+                String address = rs.getString(5);
+                String phone_number = rs.getString(6);
+                String introduce = rs.getString(7);
+                String filePath = rs.getString(8);
+                int jjim = rs.getInt(9);
+                double avg_point = rs.getDouble(10);
+                double latitude = rs.getDouble(11);
+                double longitude = rs.getDouble(12);
+
+                Map<String, Integer> map = new HashMap<>();
+                map.put("toilet", toiletCount);
+                map.put("fishing", fishingCount);
+                chabakList.add(new Chabak(placeID, placeName, address, phone_number, introduce,
+                        filePath, jjim, latitude, longitude, avg_point, map));
+            }
+            return chabakList;
+        } catch (SQLException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * 현재 인기있는 차박지 리스트 (별점 기준 상위 10개)
+     */
+    public List<Chabak> getPopularList(){
+        List<Chabak> chabakList = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM chabak_info_view ORDER BY avg_point DESC LIMIT 10;";
+
+            PreparedStatement pstmt = con.prepareStatement(query);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                int placeId = rs.getInt(1);
+                int toiletCount = rs.getInt(2);
+                int fishingCount = rs.getInt(3);
+                String placeName = rs.getString(4);
+                String address = rs.getString(5);
+                String phone_number = rs.getString(6);
+                String introduce = rs.getString(7);
+                String filePath = rs.getString(8);
+                int jjim = rs.getInt(9);
+                double avg_point = rs.getDouble(10);
+                double latitude = rs.getDouble(11);
+                double longitude = rs.getDouble(12);
+
+                Map<String, Integer> map = new HashMap<>();
+                map.put("toilet", toiletCount);
+                map.put("fishing", fishingCount);
+                chabakList.add(new Chabak(placeId, placeName, address, phone_number, introduce,
+                        filePath, jjim, latitude, longitude, avg_point, map));
+            }
+            return chabakList;
+        } catch (SQLException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
      * 특별시, 광역시, 도 단위 차박지 리스트
      */
     public List<Chabak> getProvinceChabakList(String province){
         List<Chabak> chabakList = new ArrayList<>();
         try {
             String query = "SELECT v.* FROM chabak_info_view v, cb_chabak_location l " +
-                    "WHERE v.placeId = l.placeId AND l.city_province = ?";
+                    "WHERE v.placeId = l.placeId AND l.city_province = ? ORDER BY avg_point DESC";
 
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, province);
