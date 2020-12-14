@@ -46,7 +46,7 @@ public class ArticleRepository {
 
     /**
      * 게시글 수정
-     * */
+     */
     public int updateArticle(int articleId, String title, String content, String path) {
         try {
             String query = "UPDATE cb_article SET title = ?, content = ?, imagePath = ? WHERE articleId = ?";
@@ -66,7 +66,7 @@ public class ArticleRepository {
 
     /**
      * 게시글 삭제
-     * */
+     */
     public int deleteArticle(int articleId) {
         try {
             String query = "UPDATE cb_article SET isDeleted = 1 WHERE articleId = ?";
@@ -84,15 +84,14 @@ public class ArticleRepository {
     /**
      * 게시글 리스트 읽어오기
      */
-    public List<Article> get(int num) {
+    public List<Article> get() {
         List<Article> result = new ArrayList<>();
 
         String query = "SELECT * FROM article_view " +
-                "WHERE articleId < ? ORDER BY articleId DESC LIMIT 100";
+                " ORDER BY articleId";
 
         try {
             PreparedStatement pstmt = con.prepareStatement(query);
-            pstmt.setInt(1, getNext() - ((num - 1) * 100));
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int articleId = rs.getInt(1);
@@ -171,7 +170,7 @@ public class ArticleRepository {
     /**
      * 댓글 리스트 읽기
      */
-    public List<Comment> getComments(int articleId){
+    public List<Comment> getComments(int articleId) {
         List<Comment> commentList = new ArrayList<>();
         try {
             String query = "SELECT * FROM comment_view WHERE articleId = ?";
@@ -202,7 +201,7 @@ public class ArticleRepository {
     /**
      * 댓글 쓰기
      */
-    public int writeComment(int articleId, String memberId, String content){
+    public int writeComment(int articleId, String memberId, String content) {
         try {
             String query = "INSERT INTO article_comment (articleId, memberId, content) VALUES (?, ?, ?)";
             PreparedStatement pstmt = con.prepareStatement(query);
@@ -220,7 +219,7 @@ public class ArticleRepository {
     /**
      * 사용자별 작성한 게시글 읽기
      */
-    public List<Article> getArticles(String memberId){
+    public List<Article> getArticles(String memberId) {
         List<Article> articleList = new ArrayList<>();
         try {
             String query = "SELECT * FROM article_view WHERE memberId = ?";
@@ -243,4 +242,5 @@ public class ArticleRepository {
             return new ArrayList<>();
         }
     }
+
 }

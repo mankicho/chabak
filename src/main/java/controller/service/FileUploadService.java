@@ -25,8 +25,8 @@ import java.io.PrintWriter;
         maxRequestSize = 1024 * 1024 * 50
 )
 public class FileUploadService extends HttpServlet {
-    private final String memberFilePath = "C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 8.5\\webapps\\ROOT\\resources\\member\\";
-    private final String suggestFilePath = "C:\\Program Files (x86)\\Apache Software Foundation\\Tomcat 8.5\\webapps\\ROOT\\resources\\suggest\\";
+    private final String memberFilePath = "C:\\Users\\skxz1_000\\Desktop\\apache-tomcat-8.5.57\\webapps\\ROOT\\resources\\member\\";
+    private final String suggestFilePath = "C:\\Users\\skxz1_000\\Desktop\\apache-tomcat-8.5.57\\webapps\\ROOT\\resources\\suggest\\";
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {

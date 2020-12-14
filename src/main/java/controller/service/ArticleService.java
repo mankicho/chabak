@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/article")
@@ -25,12 +26,8 @@ public class ArticleService {
      */
     @RequestMapping(value = "/get.do")
     public List<Article> get(HttpServletRequest request) {
-        System.out.println(getClass().getName()+" is called article");
-
-        String num = request.getParameter("num");
-        int n = Integer.parseInt(num);
-
-        return articleRepository.get(n);
+        System.out.println(getClass().getName() + " is called article");
+        return articleRepository.get();
     }
 
     /**
@@ -108,8 +105,16 @@ public class ArticleService {
      * 사용자별 작성한 게시글 읽기
      */
     @RequestMapping(value = "/getArticles.do")
-    public List<Article> getArticles(HttpServletRequest request){
+    public List<Article> getArticles(HttpServletRequest request) {
         return articleRepository.getArticles(request.getParameter("memberId"));
     }
 
+    @RequestMapping(value = "/getArticleByKeyword.do")
+    public List<Article> getArticlesByKeyword(HttpServletRequest request) {
+        String key = request.getParameter("key");
+        return articleRepository.get().stream().filter(article -> {
+            String text = article.getContent() + article.getTitle();
+            return text.contains(key);
+        }).collect(Collectors.toList());
+    }
 }

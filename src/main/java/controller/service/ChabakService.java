@@ -10,6 +10,7 @@ import repository.ChabakRepository;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/chabak")
@@ -32,7 +33,7 @@ public class ChabakService {
      * 차박지별 화장실 정보
      */
     @RequestMapping(value = "/getToilets.do")
-    public List<Toilet> getToilets(HttpServletRequest request){
+    public List<Toilet> getToilets(HttpServletRequest request) {
         int placeId = Integer.parseInt(request.getParameter("placeId"));
         return repository.getToilets(placeId);
     }
@@ -41,7 +42,7 @@ public class ChabakService {
      * 차박지별 낚시터 정보
      */
     @RequestMapping(value = "/getFishings.do")
-    public List<Fishing> getFishings(HttpServletRequest request){
+    public List<Fishing> getFishings(HttpServletRequest request) {
         int placeId = Integer.parseInt(request.getParameter("placeId"));
         return repository.getFishings(placeId);
     }
@@ -68,8 +69,8 @@ public class ChabakService {
         String address = request.getParameter("add");
         String[] addresses = address.split("/");
         String[] split = flags.split("/");
-        System.out.println(Arrays.toString(split)+"ASD");
-        return repository.getFilteredList(addresses,split);
+        System.out.println(Arrays.toString(split) + "ASD");
+        return repository.getFilteredList(addresses, split);
     }
 
     /**
@@ -85,7 +86,7 @@ public class ChabakService {
      * 차박지 등록하기
      */
     @RequestMapping(value = "/suggest.do")
-    public String suggest(HttpServletRequest req){
+    public String suggest(HttpServletRequest req) {
         String placeName = req.getParameter("placeName");
         String address = req.getParameter("address");
         String introduce = req.getParameter("introduce");
@@ -102,8 +103,20 @@ public class ChabakService {
      * 차박지별 등록된 리뷰 읽기
      */
     @RequestMapping(value = "/getReviews.do")
-    public List<Review> getReviews(HttpServletRequest request){
+    public List<Review> getReviews(HttpServletRequest request) {
         return repository.getReviews(Integer.parseInt(request.getParameter("placeId")));
     }
+
+    @RequestMapping(value = "/getByKey.do")
+    public List<Chabak> getChabaksByKeyword(HttpServletRequest request) {
+        String key = request.getParameter("key");
+        return repository.getAllChabakList().stream().filter(cha -> {
+            String text = cha.getAddress() + cha.getIntroduce() + cha.getPhone_number() +
+                    cha.getPlaceName() + cha;
+
+            return text.contains(key);
+        }).collect(Collectors.toList());
+    }
+
 }
 
