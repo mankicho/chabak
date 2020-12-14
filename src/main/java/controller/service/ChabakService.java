@@ -25,8 +25,22 @@ public class ChabakService {
      * 모든 차박지 리스트
      */
     @RequestMapping(value = "/get.do")
-    public List<Chabak> getAllChabakList() {
-        return repository.getAllChabakList();
+    public List<Chabak> getAllChabakList() { return repository.getAllChabakList(); }
+
+    /**
+     * 하나의 차박지 정보
+     */
+    @RequestMapping(value = "/getOne.do")
+    public List<Chabak> getOne(HttpServletRequest request) {
+        return repository.getOne(Integer.parseInt(request.getParameter("placeId")));
+    }
+
+    /**
+     * 현재 인기있는 차박지 리스트 (별점 기준 상위 10개)
+     */
+    @RequestMapping(value = "/getPopularList.do")
+    public List<Chabak> getPopularList(){
+        return repository.getPopularList();
     }
 
     /**

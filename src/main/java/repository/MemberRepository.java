@@ -293,19 +293,20 @@ public class MemberRepository {
     public List<Review> getUsersReview(String memberId) {
         List<Review> reviewList = new ArrayList<>();
         try {
-            String query = " SELECT placeId, nickName, review_content, evaluation_point, eval_time FROM user_evaluation WHERE memberId = ?";
+            String query = "SELECT * FROM review_view WHERE memberId = ?";
             PreparedStatement pstmt = con.prepareStatement(query);
             pstmt.setString(1, memberId);
 
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
                 int placeID = rs.getInt(1);
-                String nickName = rs.getString(2);
-                String review_content = rs.getString(3);
-                double evaluation_point = rs.getDouble(4);
-                String eval_time = rs.getString(5);
+                String memberID = rs.getString(2);
+                String nickName = rs.getString(3);
+                String review_content = rs.getString(4);
+                double evaluation_point = rs.getDouble(5);
+                String eval_time = rs.getString(6);
 
-                reviewList.add(new Review(placeID, nickName, review_content, evaluation_point, eval_time));
+                reviewList.add(new Review(placeID, memberID, nickName, review_content, evaluation_point, eval_time));
             }
             return reviewList;
         } catch (SQLException e) {
