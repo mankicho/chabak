@@ -28,3 +28,12 @@
  
  ## 팀 구성원
  - 개발자 3명(데이터 처리 1명, 백엔드 개발자 1명, 프론트엔드 개발자 1명)
+ <br><br>
+ 
+ ## 앱 화면
+ [차박지 검색 및 세부정보 조회]<br>
+ ![image](https://user-images.githubusercontent.com/48756287/130067629-9849f282-f931-4fc2-8405-17f07daa7ecd.png)<br>
+ 차박지를 지역 혹은 키워드로 검색하고 세부정보를 가져오는 화면<br><br>
+ [사용자 게시판]<br>
+ ![image](https://user-images.githubusercontent.com/48756287/130067912-4eb4306c-d8b1-4f0c-8f74-c03f41c665d1.png)<br>
+ 사용자 끼리 데이터를 주고받는 게시판 화면
